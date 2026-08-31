@@ -1,0 +1,12 @@
+{
+  "name": "jpa-academy-seed-scripts",
+  "version": "1.0.0",
+  "description": "سكربتات إدارية لمنصة الجودة للفارمسي أكاديمي (إنشاء حسابات تجريبية)",
+  "private": true,
+  "scripts": {
+    "seed": "node seed-users.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  }
+}

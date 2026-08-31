@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>منصة الجودة للفارمسي أكاديمي | Al-Jawda Pharmacy Academy</title>
+<meta name="description" content="منصة تعليمية متخصصة في المجال الصيدلي والطبي - محاكاة سريرية، تفاعلات دوائية، وتعليم طبي مستمر." />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0e7c66" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="icon" href="assets/icon-192.png" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
+  <h1>منصة الجودة للفارمسي أكاديمي</h1>
+  <p class="slogan">« معايير الجودة في التعليم الصيدلي.. واحترافية الممارسة الإكلينيكية »</p>
+</header>
+
+<main class="container">
+
+  <div class="card">
+    <h2 style="margin-top:0;">مرحباً بك 👋</h2>
+    <p>منصة تعليمية متخصصة حصرياً في المجال الطبي والصيدلي، تضم محاكاة الحالات السريرية، بنك أسئلة مزاولة المهنة، والتعليم الطبي المستمر (CME).</p>
+    <a href="login.html" class="btn btn-primary">تسجيل الدخول / ابدأ الآن</a>
+  </div>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="icon">🩺</div>
+      <strong>محاكاة سريرية</strong>
+      <p style="font-size:0.8rem;color:var(--muted);">Clinical Cases</p>
+    </div>
+    <div class="pillar">
+      <div class="icon">💊</div>
+      <strong>تفاعلات دوائية</strong>
+      <p style="font-size:0.8rem;color:var(--muted);">DDI Checker</p>
+    </div>
+    <div class="pillar">
+      <div class="icon">📝</div>
+      <strong>بنك أسئلة</strong>
+      <p style="font-size:0.8rem;color:var(--muted);">Licensing Exam Bank</p>
+    </div>
+    <div class="pillar">
+      <div class="icon">🎓</div>
+      <strong>تعليم مستمر</strong>
+      <p style="font-size:0.8rem;color:var(--muted);">CME Certified</p>
+    </div>
+  </div>
+
+  <div class="card" style="text-align:center; margin-top:16px;">
+    <p style="color:var(--muted); font-size:0.85rem;">تعمل هذه المنصة كتطبيق ويب (PWA) ويمكن إضافتها للشاشة الرئيسية في هاتفك، مع مزامنة فورية لبياناتك عبر جميع أجهزتك.</p>
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="active"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="login.html"><span class="nav-icon">🔑</span>دخول</a>
+  <a href="pilot.html"><span class="nav-icon">🎬</span>المحاضرات</a>
+</nav>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>تسجيل الدخول | Al-Jawda Pharmacy Academy</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0e7c66" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
+  <h1>تسجيل الدخول</h1>
+  <p class="slogan">بيانات حسابك تُزامن تلقائياً بين الهاتف والويب</p>
+</header>
+
+<main class="login-wrap">
+
+  <div class="card">
+    <div id="error-box"></div>
+    <div class="form-group">
+      <label for="email">البريد الإلكتروني</label>
+      <input type="email" id="email" placeholder="example@jpa-academy.com" />
+    </div>
+    <div class="form-group">
+      <label for="password">كلمة المرور</label>
+      <input type="password" id="password" placeholder="••••••••" />
+    </div>
+    <button class="btn btn-primary" onclick="handleLogin()">دخول</button>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">حسابات تجريبية (دخول بنقرة واحدة)</h3>
+    <div class="demo-list" id="demo-accounts"></div>
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="login.html" class="active"><span class="nav-icon">🔑</span>دخول</a>
+  <a href="pilot.html"><span class="nav-icon">🎬</span>المحاضرات</a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  renderDemoAccounts("demo-accounts");
+
+  function handleLogin() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    if (!email || !password) {
+      showError({ message: "الرجاء إدخال البريد الإلكتروني وكلمة المرور" });
+      return;
+    }
+    loginWithEmail(email, password).catch(showError);
+  }
+
+  auth.onAuthStateChanged((user) => {
+    if (user) window.location.href = "pilot.html";
+  });
+</script>
+</body>
+</html>
