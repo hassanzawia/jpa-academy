@@ -1,5 +1,6 @@
 // =====================================================================
 // منطق تسجيل الدخول / الخروج - Auth Logic
+// 🆕 يشمل الآن حقل "الاسم الكامل" (fullName) المطلوب لإصدار الشهادات
 // =====================================================================
 
 const DEMO_ACCOUNTS = [
@@ -24,15 +25,25 @@ async function ensureUserProfile(user) {
   if (!snap.exists) {
     await ref.set({
       email: user.email,
+      fullName: "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
       walletBalance: 0,
       enrolledCourses: [],
-      progress: {}
+      progress: {},
+      completedChapters: {},
+      certificates: {}
     });
   } else {
     await ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
   }
+}
+
+// 🆕 حفظ الاسم الكامل للمستخدم (يُستخدم لاحقاً على الشهادة)
+function saveFullName(name) {
+  const user = auth.currentUser;
+  if (!user) return Promise.reject(new Error("المستخدم غير مسجل الدخول"));
+  return db.collection("users").doc(user.uid).update({ fullName: name });
 }
 
 function logout() {

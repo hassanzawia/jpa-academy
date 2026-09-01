@@ -2,13 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      // المستخدم نفسه: قراءة وتحديث كامل لملفه الشخصي
       allow read, update: if request.auth != null && request.auth.uid == userId;
       allow create: if request.auth != null && request.auth.uid == userId;
       allow delete: if false;
 
-      // 🆕 المدير: يُسمح له بتحديث حقل walletBalance فقط لأي مستخدم آخر
-      // (وليس أي حقل آخر) - حماية إضافية تمنع التلاعب ببيانات حساسة أخرى
+      // المدير: صلاحية محدودة على حقل walletBalance فقط
       allow update: if request.auth != null
                     && request.auth.token.admin == true
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['walletBalance']);
@@ -17,14 +15,20 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
 
-      // 🆕 سجل عمليات شحن الرصيد (Audit Trail) - يقرأه صاحب الحساب أو المدير
-      // ويكتبه المدير فقط عند تنفيذ عملية شحن
       match /walletTransactions/{transactionId} {
         allow read: if request.auth != null
                     && (request.auth.uid == userId || request.auth.token.admin == true);
         allow create: if request.auth != null && request.auth.token.admin == true;
         allow update, delete: if false;
       }
+    }
+
+    // 🆕 شهادات صادرة - قابلة للتحقق العام بدون تسجيل دخول (verify.html)
+    // الكتابة مسموحة فقط لصاحب الشهادة نفسه (uid يطابق حساب المُصدِر)
+    match /issuedCertificates/{certId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
     }
 
     match /{document=**} {

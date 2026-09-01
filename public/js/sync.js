@@ -1,7 +1,7 @@
 // =====================================================================
 // مزامنة البيانات الفورية (Realtime Sync) بين الهاتف والويب
 // يشمل: المحفظة (Wallet)، الاشتراك في الدورات، تقدّم المشاهدة،
-// وشحن الرصيد من لوحة المدير (v2)
+// شحن الرصيد من لوحة المدير، و🆕 تتبّع اكتمال الفصول للشهادات
 // =====================================================================
 
 // --- محفظة الرصيد (Wallet) ---
@@ -21,6 +21,34 @@ function listenToWallet(onUpdate) {
         }
       },
       (err) => console.error("listenToWallet error:", err)
+    );
+  });
+  return () => {
+    unsubDoc();
+    unsubAuth();
+  };
+}
+
+// --- 🆕 بيانات إضافية للملف الشخصي (الاسم الكامل + الفصول المكتملة + الشهادات) ---
+
+function listenToProfileExtra(onUpdate) {
+  let unsubDoc = () => {};
+  const unsubAuth = auth.onAuthStateChanged((user) => {
+    unsubDoc();
+    if (!user) {
+      onUpdate({ fullName: "", completedChapters: {}, certificates: {} });
+      return;
+    }
+    unsubDoc = db.collection("users").doc(user.uid).onSnapshot(
+      (doc) => {
+        const data = doc.exists ? doc.data() : {};
+        onUpdate({
+          fullName: data.fullName || "",
+          completedChapters: data.completedChapters || {},
+          certificates: data.certificates || {}
+        });
+      },
+      (err) => console.error("listenToProfileExtra error:", err)
     );
   });
   return () => {
@@ -53,8 +81,6 @@ async function enrollInCourse(courseId, price) {
   });
 }
 
-// --- شحن رصيد المستخدم الحالي نفسه (غير مستخدمة حالياً في الواجهة) ---
-
 function topUpWallet(amount) {
   const user = auth.currentUser;
   if (!user) return Promise.reject(new Error("المستخدم غير مسجل الدخول"));
@@ -62,11 +88,6 @@ function topUpWallet(amount) {
     walletBalance: firebase.firestore.FieldValue.increment(amount)
   });
 }
-
-// --- 🆕 شحن رصيد مستخدم آخر بواسطة المدير (Admin Top-up) ---
-// يعتمد على قاعدة firestore.rules التي تسمح للمدير بتحديث حقل
-// walletBalance فقط (وليس أي حقل آخر) لأي مستخدم في المنصة.
-// كما يُسجَّل كل عملية شحن في سجل تدقيق (walletTransactions) للشفافية.
 
 function topUpWalletForUser(targetUid, amount, note) {
   const admin = auth.currentUser;
@@ -93,7 +114,7 @@ function topUpWalletForUser(targetUid, amount, note) {
   return batch.commit();
 }
 
-// --- تقدّم مشاهدة الفصول (Chapters Progress) ---
+// --- تقدّم مشاهدة الفصول (Chapters Progress - نقطة التوقف فقط) ---
 
 function saveChapterProgress(courseId, chapterId, data) {
   const user = auth.currentUser;
@@ -120,6 +141,18 @@ function listenToProgress(onUpdate) {
   };
 }
 
+// --- 🆕 تأكيد إنهاء فصل (يدوياً بضغطة زر) - أساس منطق الشهادات ---
+
+function markChapterComplete(courseId, chapterId) {
+  const user = auth.currentUser;
+  if (!user) return Promise.reject(new Error("المستخدم غير مسجل الدخول"));
+  const key = `${courseId}__${chapterId}`;
+  return db.collection("users").doc(user.uid).set(
+    { completedChapters: { [key]: true } },
+    { merge: true }
+  );
+}
+
 // --- الحالات السريرية (Clinical Cases) ---
 
 function saveClinicalCaseResult(caseId, score, answers) {
@@ -135,6 +168,32 @@ function saveClinicalCaseResult(caseId, score, answers) {
       answers,
       submittedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+}
+
+// --- 🆕 الاستماع لحالات المستخدم الحالي السريرية (لأغراض التحقق من أهلية الشهادة) ---
+
+function listenToMyClinicalCases(onUpdate) {
+  let unsubDoc = () => {};
+  const unsubAuth = auth.onAuthStateChanged((user) => {
+    unsubDoc();
+    if (!user) {
+      onUpdate([]);
+      return;
+    }
+    unsubDoc = db
+      .collection("users")
+      .doc(user.uid)
+      .collection("clinicalCases")
+      .onSnapshot((snap) => {
+        const list = [];
+        snap.forEach((d) => list.push({ id: d.id, ...d.data() }));
+        onUpdate(list);
+      });
+  });
+  return () => {
+    unsubDoc();
+    unsubAuth();
+  };
 }
 
 function listenToAllUsersCases(onUpdate) {

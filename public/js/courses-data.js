@@ -1,14 +1,11 @@
 // =====================================================================
 // بيانات الدورات - منصة الجودة للفارمسي أكاديمي
 // مستوحاة من هيكلة منصة إيضاح (Edah): تصنيفات، مدرّسون، شابترات (فصول)
+// 🆕 يشمل الآن ربط كل دورة بمعرّف الحالة السريرية المطلوبة لإصدار الشهادة
 // =====================================================================
 //
 // 🎥 كل فيديو يُستضاف على Google Drive (وليس مرفوعاً محلياً).
-// لإضافة فيديو جديد، اتبع الطريقة الموضحة في GOOGLE_DRIVE_VIDEOS_GUIDE.md
-// ثم ضع "driveId" فقط (الجزء بين /d/ و /view في رابط المشاركة).
-//
-// مثال: الرابط: https://drive.google.com/file/d/1AbCdEfGhIJKLmnop/view
-//        driveId: "1AbCdEfGhIJKLmnop"
+// راجع GOOGLE_DRIVE_VIDEOS_GUIDE.md لمعرفة كيفية الحصول على driveId.
 // =====================================================================
 
 const COURSE_CATEGORIES = [
@@ -29,6 +26,9 @@ const COURSES = [
     price: 100,
     currency: "د.ل",
     description: "دورة شاملة في مبادئ الصرف الآمن للأدوية بدون وصفة طبية، والتفاعلات الدوائية الشائعة.",
+    // 🆕 معرّف الحالة السريرية المطلوب اجتيازها (بدرجة 70%+) لإصدار الشهادة
+    // اتركه null إن كانت الدورة لا تتطلب حالة سريرية لإصدار الشهادة
+    certificateCaseId: "case-otc-warfarin",
     chapters: [
       {
         id: "ch1-intro",
@@ -63,6 +63,7 @@ const COURSES = [
     price: 75,
     currency: "د.ل",
     description: "أساسيات المصطلحات الطبية اللاتينية واليونانية المستخدمة في الوصفات والتقارير الطبية.",
+    certificateCaseId: null,
     chapters: [
       {
         id: "ch1-roots",
@@ -83,6 +84,7 @@ const COURSES = [
     price: 60,
     currency: "د.ل",
     description: "تطوير المصطلحات والمحادثة الطبية بالإنجليزية للتعامل مع المرضى والزملاء الأجانب.",
+    certificateCaseId: null,
     chapters: [
       {
         id: "ch1-vocab",
@@ -113,7 +115,6 @@ function getChapterById(courseId, chapterId) {
   return course.chapters.find((ch) => ch.id === chapterId) || null;
 }
 
-// يبني رابط تضمين Google Drive الآمن (iframe /preview) من معرّف الملف
 function buildDriveEmbedUrl(driveId) {
   return `https://drive.google.com/file/d/${driveId}/preview`;
 }

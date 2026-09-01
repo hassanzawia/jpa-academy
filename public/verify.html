@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>التحقق من شهادة | Al-Jawda Pharmacy Academy</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0e7c66" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
+  <h1>🔍 التحقق من صحة شهادة</h1>
+  <p class="slogan">أدخل رقم الشهادة للتحقق من صحتها فوراً</p>
+</header>
+
+<main class="login-wrap">
+
+  <div class="card">
+    <div class="form-group">
+      <label for="cert-id-input">رقم الشهادة (Certificate ID)</label>
+      <input type="text" id="cert-id-input" placeholder="مثال: JPA-2026-A1B2C3D4" />
+    </div>
+    <button class="btn btn-primary" onclick="verifyCertificate()">تحقق الآن</button>
+  </div>
+
+  <div id="result-valid" class="card" style="display:none; background:#e5f6ec; border:1.5px solid #2fa864;">
+    <div style="text-align:center; font-size:2rem; margin-bottom:10px;">✅</div>
+    <h3 style="text-align:center; margin:0 0 16px; color:#1f7a4d;">شهادة صحيحة وموثّقة</h3>
+    <table style="width:100%; font-size:0.9rem;">
+      <tr><td style="padding:6px 0; color:var(--muted);">الاسم:</td><td style="padding:6px 0; font-weight:700;" id="v-name"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">الدورة:</td><td style="padding:6px 0; font-weight:700;" id="v-course"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">المدرّس:</td><td style="padding:6px 0; font-weight:700;" id="v-instructor"></td></tr>
+      <tr><td style="padding:6px 0; color:var(--muted);">تاريخ الإصدار:</td><td style="padding:6px 0; font-weight:700;" id="v-date"></td></tr>
+    </table>
+  </div>
+
+  <div id="result-invalid" class="card" style="display:none; background:#fdeaea; border:1.5px solid #d64545; text-align:center;">
+    <div style="font-size:2rem; margin-bottom:10px;">❌</div>
+    <h3 style="margin:0; color:#d64545;">رقم الشهادة غير موجود</h3>
+    <p style="color:var(--muted); font-size:0.85rem;">تأكد من كتابة رقم الشهادة بالضبط كما يظهر على المستند.</p>
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="login.html"><span class="nav-icon">🔑</span>دخول</a>
+  <a href="verify.html" class="active"><span class="nav-icon">🔍</span>التحقق</a>
+</nav>
+
+<!-- ملاحظة: هذه الصفحة لا تتطلب تسجيل دخول، لذا نحمّل Firestore فقط بدون Authentication -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAhqeuGr5jN69TfyeQnDxRiQ-dQvieNxdg",
+    authDomain: "pharmacyacadimy.firebaseapp.com",
+    projectId: "pharmacyacadimy",
+    storageBucket: "pharmacyacadimy.firebasestorage.app",
+    messagingSenderId: "78419011632",
+    appId: "1:78419011632:web:1432df05befac9dccfe5f5",
+    measurementId: "G-XZWTZ2EN5D"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  async function verifyCertificate() {
+    const id = document.getElementById("cert-id-input").value.trim();
+    document.getElementById("result-valid").style.display = "none";
+    document.getElementById("result-invalid").style.display = "none";
+    if (!id) return;
+
+    try {
+      const doc = await db.collection("issuedCertificates").doc(id).get();
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById("v-name").textContent = data.studentName || "—";
+        document.getElementById("v-course").textContent = data.courseTitle || "—";
+        document.getElementById("v-instructor").textContent = data.instructor || "—";
+        document.getElementById("v-date").textContent = data.issuedAt
+          ? new Date(data.issuedAt.seconds * 1000).toLocaleDateString("ar-LY", { year: "numeric", month: "long", day: "numeric" })
+          : "—";
+        document.getElementById("result-valid").style.display = "block";
+      } else {
+        document.getElementById("result-invalid").style.display = "block";
+      }
+    } catch (err) {
+      alert("حدث خطأ أثناء التحقق: " + err.message);
+    }
+  }
+</script>
+</body>
+</html>

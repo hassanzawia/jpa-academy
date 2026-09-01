@@ -40,7 +40,10 @@
       </div>
       <h3 id="chapter-title" style="margin:8px 0 4px;"></h3>
       <p style="color:var(--muted); font-size:0.85rem;" id="chapter-duration"></p>
-      <a id="chapter-pdf-link" href="#" target="_blank" class="btn btn-outline btn-small" style="display:none; width:auto;">📄 تحميل ملخص PDF</a>
+      <a id="chapter-pdf-link" href="#" target="_blank" class="btn btn-outline btn-small" style="display:none; width:auto; margin-bottom:8px;">📄 تحميل ملخص PDF</a>
+      <div>
+        <button class="btn btn-primary btn-small" id="mark-complete-btn" onclick="handleMarkComplete()">✅ أنهيت هذا الفصل</button>
+      </div>
     </div>
 
     <div class="card">
@@ -57,6 +60,7 @@
         <button class="case-option" data-correct="false" onclick="answerCase(this,'مضاد حموضة موضعي')">مضاد حموضة موضعي</button>
       </div>
       <p id="case-feedback" style="display:none; margin-top:12px; font-weight:600;"></p>
+      <p style="color:var(--muted); font-size:0.8rem; margin-top:10px;">💡 اجتياز هذه الحالة بدرجة 70% أو أعلى مطلوب لإصدار شهادة هذه الدورة.</p>
     </div>
 
   </div>
@@ -94,6 +98,7 @@
   const course = getCourseById(courseId);
   let currentChapterId = null;
   let isEnrolled = false;
+  let currentCompletedChapters = {};
 
   if (!course) {
     document.getElementById("course-title").textContent = "الدورة غير موجودة";
@@ -115,14 +120,24 @@
     }
   });
 
+  // 🆕 الاستماع لحالة الفصول المكتملة (لعرض العلامات ✅ وحالة الزر)
+  listenToProfileExtra((extra) => {
+    currentCompletedChapters = extra.completedChapters || {};
+    renderChapters();
+    updateMarkCompleteButtonState();
+  });
+
   function renderChapters() {
+    if (!course) return;
     const list = document.getElementById("chapters-list");
     list.innerHTML = "";
     course.chapters.forEach((ch) => {
+      const key = `${course.id}__${ch.id}`;
+      const isDone = currentCompletedChapters[key] === true;
       const item = document.createElement("div");
       item.className = "chapter-item" + (ch.id === currentChapterId ? " active" : "");
       item.innerHTML = `
-        <span class="ch-title">${ch.title}</span>
+        <span class="ch-title">${isDone ? '<span class="ch-check">✅</span> ' : ""}${ch.title}</span>
         <span class="ch-duration">${ch.durationMinutes} د</span>
       `;
       item.onclick = () => loadChapter(ch.id);
@@ -145,7 +160,39 @@
       pdfLink.style.display = "none";
     }
     renderChapters();
+    updateMarkCompleteButtonState();
     saveChapterProgress(course.id, chapterId, { started: true });
+  }
+
+  // 🆕 زر "أنهيت هذا الفصل"
+  function handleMarkComplete() {
+    if (!course || !currentChapterId) return;
+    const btn = document.getElementById("mark-complete-btn");
+    btn.disabled = true;
+    btn.textContent = "جارٍ الحفظ...";
+    markChapterComplete(course.id, currentChapterId)
+      .then(() => {
+        // التحديث الفعلي للواجهة سيأتي تلقائياً عبر listenToProfileExtra
+      })
+      .catch((err) => {
+        alert("حدث خطأ: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "✅ أنهيت هذا الفصل";
+      });
+  }
+
+  function updateMarkCompleteButtonState() {
+    if (!course || !currentChapterId) return;
+    const key = `${course.id}__${currentChapterId}`;
+    const btn = document.getElementById("mark-complete-btn");
+    if (!btn) return;
+    if (currentCompletedChapters[key]) {
+      btn.textContent = "✅ تم إنهاء هذا الفصل";
+      btn.disabled = true;
+    } else {
+      btn.textContent = "✅ أنهيت هذا الفصل";
+      btn.disabled = false;
+    }
   }
 
   async function handleEnroll() {
