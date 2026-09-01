@@ -33,7 +33,7 @@ const COURSES = [
       {
         id: "ch1-intro",
         title: "الفصل 1: مقدمة في الصرف الآمن",
-        driveId: "YOUR_DRIVE_ID_1",
+        driveId: "1kdEA-xIO_bmH9rAgiATrOerStyLzqkya",
         durationMinutes: 25,
         summaryPdf: "assets/ch1-summary.pdf"
       },
