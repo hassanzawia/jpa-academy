@@ -21,7 +21,7 @@
   <div class="wallet-bar">
     <div>
       <div class="label">رصيد محفظتك</div>
-      <div class="balance" id="wallet-balance">0 د.ل</div>
+      <div class="balance" id="wallet-balance">... جارٍ التحميل</div>
     </div>
     <button class="btn btn-outline btn-small" style="background:#fff;" onclick="requestTopUp()">شحن الرصيد</button>
   </div>
@@ -48,6 +48,9 @@
 <script>
   requireAuth();
 
+  // ⚠️ إصلاح مهم: نعرض بطاقات الدورات فوراً بقيم افتراضية (رصيد 0، بدون اشتراكات)
+  // دون انتظار استجابة Firebase، حتى لا تختفي القائمة إن تأخر الاتصال.
+  // بمجرد وصول بيانات Firestore الحقيقية عبر listenToWallet، يُعاد رسم كل شيء بالقيم الصحيحة.
   let currentBalance = 0;
   let currentEnrolled = [];
   let activeCategory = "all";
@@ -56,6 +59,11 @@
     if (user) document.getElementById("welcome-user").textContent = "مرحباً، " + user.email;
   });
 
+  // رسم أولي فوري (defense-in-depth) حتى لا تظهر الصفحة فارغة أبداً
+  renderCategoryFilters();
+  renderCourses();
+
+  // تحديث حي بمجرد جاهزية Firestore
   listenToWallet((balance, enrolled) => {
     currentBalance = balance;
     currentEnrolled = enrolled;
@@ -65,6 +73,7 @@
 
   function renderCategoryFilters() {
     const container = document.getElementById("category-filters");
+    container.innerHTML = "";
     const allChip = document.createElement("button");
     allChip.className = "category-chip active";
     allChip.textContent = "🔎 الكل";
@@ -126,8 +135,6 @@
   function requestTopUp() {
     alert("لشحن رصيد محفظتك، تواصل مع إدارة المنصة عبر واتساب أو زر لوحة المدير (نظام دفع حقيقي يمكن ربطه لاحقاً).");
   }
-
-  renderCategoryFilters();
 </script>
 </body>
 </html>

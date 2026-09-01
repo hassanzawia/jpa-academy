@@ -108,7 +108,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
    ميزات مستوحاة من منصة إيضاح (Edah): الدورات، المحفظة، الفصول
    ============================================================ */
 
-/* شريط المحفظة */
 .wallet-bar {
   display: flex; align-items: center; justify-content: space-between;
   background: linear-gradient(135deg, var(--accent), #d68f00);
@@ -118,7 +117,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
 .wallet-bar .balance { font-size: 1.3rem; font-weight: 700; }
 .wallet-bar .label { font-size: 0.8rem; opacity: 0.9; }
 
-/* فلاتر التصنيفات */
 .category-filters { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; }
 .category-chip {
   flex-shrink: 0; padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--primary);
@@ -126,7 +124,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
 }
 .category-chip.active { background: var(--primary); color: #fff; }
 
-/* بطاقة الدورة (Course Card) */
 .course-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 .course-card {
   background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);
@@ -149,7 +146,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
   background: #e5f6ec; color: #2fa864; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
 }
 
-/* قائمة الفصول (Chapters) داخل صفحة المشغّل */
 .chapters-list { display: flex; flex-direction: column; gap: 8px; }
 .chapter-item {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -160,7 +156,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
 .chapter-item .ch-duration { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
 .chapter-item .ch-check { color: #2fa864; font-size: 1rem; }
 
-/* حاوية فيديو Google Drive (نسبة عرض 16:9 متجاوبة) */
 .gdrive-video-wrap {
   position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius);
   overflow: hidden; background: #000; margin-bottom: 12px;
@@ -169,7 +164,6 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
 }
 
-/* شارة القفل لدورة غير مشترك بها */
 .locked-overlay {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px; padding: 30px 16px; text-align: center;

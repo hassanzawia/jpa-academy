@@ -1,10 +1,9 @@
-// Service Worker بسيط للعمل دون اتصال (Offline-first shell)
-const CACHE_NAME = "jpa-academy-v2";
+// Service Worker - نسخة v3
+// 🔧 إصلاح مهم: تحويل استراتيجية تحميل صفحات HTML إلى "الشبكة أولاً" (Network First)
+// بدلاً من "التخزين المؤقت أولاً" (Cache First)، لمنع ظهور نسخ قديمة عالقة من الصفحة
+// بعد كل تحديث (مثل المشكلة التي حدثت سابقاً مع courses.html).
+const CACHE_NAME = "jpa-academy-v3";
 const ASSETS = [
-  "index.html",
-  "login.html",
-  "courses.html",
-  "course-player.html",
   "css/style.css",
   "js/firebase-config.js",
   "js/auth.js",
@@ -30,12 +29,25 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // لا نُخزّن مؤقتاً طلبات Firebase أو Google Drive حتى تبقى البيانات والفيديوهات محدّثة دائماً
-  if (event.request.url.includes("firestore.googleapis.com") ||
-      event.request.url.includes("identitytoolkit.googleapis.com") ||
-      event.request.url.includes("drive.google.com")) {
+  const url = event.request.url;
+
+  // لا نتدخل إطلاقاً في طلبات Firebase أو Google Drive - يجب أن تصل الشبكة دائماً
+  if (url.includes("firestore.googleapis.com") ||
+      url.includes("identitytoolkit.googleapis.com") ||
+      url.includes("drive.google.com") ||
+      url.includes("googleapis.com")) {
     return;
   }
+
+  // لصفحات HTML (التنقل بين الصفحات): الشبكة أولاً، ثم التخزين المؤقت كخطة بديلة فقط
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // لباقي الملفات الثابتة (CSS/JS): التخزين المؤقت أولاً لسرعة أعلى
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request))
   );

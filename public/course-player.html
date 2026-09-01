@@ -63,6 +63,11 @@
 
   </div>
 
+  <!-- حالة تحميل أولية (تظهر لحظياً قبل تأكيد الاشتراك من عدمه) -->
+  <div id="loading-card" class="card">
+    <p style="text-align:center;color:var(--muted);">⏳ جارٍ التحقق من اشتراكك...</p>
+  </div>
+
   <div class="card">
     <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">↩️ الرجوع لقائمة الدورات</button>
     <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
@@ -94,6 +99,7 @@
 
   if (!course) {
     document.getElementById("course-title").textContent = "الدورة غير موجودة";
+    document.getElementById("loading-card").style.display = "none";
   } else {
     document.getElementById("course-title").textContent = course.title;
     document.getElementById("course-instructor").textContent = `${course.instructor} · ${course.instructorTitle}`;
@@ -101,6 +107,7 @@
   }
 
   listenToWallet((balance, enrolled) => {
+    document.getElementById("loading-card").style.display = "none";
     isEnrolled = course && enrolled.includes(course.id);
     document.getElementById("locked-card").style.display = isEnrolled ? "none" : "block";
     document.getElementById("course-content").style.display = isEnrolled ? "block" : "none";

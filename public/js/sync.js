@@ -1,16 +1,38 @@
 // =====================================================================
 // مزامنة البيانات الفورية (Realtime Sync) بين الهاتف والويب
 // يشمل: المحفظة (Wallet)، الاشتراك في الدورات، وتقدّم المشاهدة
+//
+// 🔧 ملاحظة إصلاح مهمة (v2):
+// كل دالة "listenTo..." هنا تنتظر داخلياً تأكيد حالة تسجيل الدخول
+// عبر auth.onAuthStateChanged بدلاً من الاعتماد على auth.currentUser
+// مباشرة عند الاستدعاء. هذا يمنع مشكلة "race condition" التي كانت
+// تسبب عدم ظهور البيانات (مثل قائمة الدورات ورصيد المحفظة) عند
+// تحميل الصفحة لأول مرة، قبل أن يتأكد Firebase من هوية المستخدم.
 // =====================================================================
 
 // --- محفظة الرصيد (Wallet) ---
 
 function listenToWallet(onUpdate) {
-  const user = auth.currentUser;
-  if (!user) return () => {};
-  return db.collection("users").doc(user.uid).onSnapshot((doc) => {
-    if (doc.exists) onUpdate(doc.data().walletBalance || 0, doc.data().enrolledCourses || []);
+  let unsubDoc = () => {};
+  const unsubAuth = auth.onAuthStateChanged((user) => {
+    unsubDoc();
+    if (!user) return;
+    unsubDoc = db.collection("users").doc(user.uid).onSnapshot(
+      (doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          onUpdate(data.walletBalance || 0, data.enrolledCourses || []);
+        } else {
+          onUpdate(0, []);
+        }
+      },
+      (err) => console.error("listenToWallet error:", err)
+    );
   });
+  return () => {
+    unsubDoc();
+    unsubAuth();
+  };
 }
 
 // --- الاشتراك في دورة (خصم من المحفظة) ---
@@ -60,11 +82,18 @@ function saveChapterProgress(courseId, chapterId, data) {
 }
 
 function listenToProgress(onUpdate) {
-  const user = auth.currentUser;
-  if (!user) return () => {};
-  return db.collection("users").doc(user.uid).onSnapshot((doc) => {
-    if (doc.exists) onUpdate(doc.data().progress || {});
+  let unsubDoc = () => {};
+  const unsubAuth = auth.onAuthStateChanged((user) => {
+    unsubDoc();
+    if (!user) return;
+    unsubDoc = db.collection("users").doc(user.uid).onSnapshot((doc) => {
+      if (doc.exists) onUpdate(doc.data().progress || {});
+    });
   });
+  return () => {
+    unsubDoc();
+    unsubAuth();
+  };
 }
 
 // --- الحالات السريرية (Clinical Cases) ---
