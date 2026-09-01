@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>مشغّل الدورة | Al-Jawda Pharmacy Academy</title>
+<title>Ù…Ø´ØºÙ‘Ù„ Ø§Ù„Ø¯ÙˆØ±Ø© | Al-Jawda Pharmacy Academy</title>
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#0e7c66" />
 <link rel="stylesheet" href="css/style.css" />
@@ -11,29 +11,29 @@
 <body>
 
 <header class="header">
-  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
-  <h1 id="course-title">الدورة</h1>
-  <p class="slogan" id="course-instructor">المدرّس</p>
+  <div class="logo-badge">JPA Â· Al-Jawda Pharmacy Academy</div>
+  <h1 id="course-title">Ø§Ù„Ø¯ÙˆØ±Ø©</h1>
+  <p class="slogan" id="course-instructor">Ø§Ù„Ù…Ø¯Ø±Ù‘Ø³</p>
 </header>
 
 <main class="container">
 
   <div class="card sync-indicator">
-    <span class="dot"></span> <span>متصل - يتم حفظ تقدّمك تلقائياً على كل أجهزتك</span>
+    <span class="dot"></span> <span>Ù…ØªØµÙ„ - ÙŠØªÙ… Ø­ÙØ¸ ØªÙ‚Ø¯Ù‘Ù…Ùƒ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¹Ù„Ù‰ ÙƒÙ„ Ø£Ø¬Ù‡Ø²ØªÙƒ</span>
   </div>
 
-  <!-- حالة عدم الاشتراك -->
+  <!-- Ø­Ø§Ù„Ø© Ø¹Ø¯Ù… Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ -->
   <div id="locked-card" class="card" style="display:none;">
     <div class="locked-overlay">
-      <div class="lock-icon">🔒</div>
-      <h3 style="margin:0;">هذه الدورة تتطلب اشتراكاً</h3>
-      <p style="color:var(--muted);" id="locked-price">السعر: -- د.ل</p>
-      <button class="btn btn-primary" id="enroll-btn" onclick="handleEnroll()">اشترك الآن من محفظتي</button>
-      <button class="btn btn-outline" onclick="window.location.href='courses.html'">الرجوع للدورات</button>
+      <div class="lock-icon">ðŸ”’</div>
+      <h3 style="margin:0;">Ù‡Ø°Ù‡ Ø§Ù„Ø¯ÙˆØ±Ø© ØªØªØ·Ù„Ø¨ Ø§Ø´ØªØ±Ø§ÙƒØ§Ù‹</h3>
+      <p style="color:var(--muted);" id="locked-price">Ø§Ù„Ø³Ø¹Ø±: -- Ø¯.Ù„</p>
+      <button class="btn btn-primary" id="enroll-btn" onclick="handleEnroll()">Ø§Ø´ØªØ±Ùƒ Ø§Ù„Ø¢Ù† Ù…Ù† Ù…Ø­ÙØ¸ØªÙŠ</button>
+      <button class="btn btn-outline" onclick="window.location.href='courses.html'">Ø§Ù„Ø±Ø¬ÙˆØ¹ Ù„Ù„Ø¯ÙˆØ±Ø§Øª</button>
     </div>
   </div>
 
-  <!-- محتوى الدورة (يظهر فقط بعد الاشتراك) -->
+  <!-- Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø¯ÙˆØ±Ø© (ÙŠØ¸Ù‡Ø± ÙÙ‚Ø· Ø¨Ø¹Ø¯ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ) -->
   <div id="course-content" style="display:none;">
 
     <div class="card">
@@ -42,43 +42,44 @@
       </div>
       <h3 id="chapter-title" style="margin:8px 0 4px;"></h3>
       <p style="color:var(--muted); font-size:0.85rem;" id="chapter-duration"></p>
-      <a id="chapter-pdf-link" href="#" target="_blank" class="btn btn-outline btn-small" style="display:none; width:auto;">📄 تحميل ملخص PDF</a>
+      <a id="chapter-pdf-link" href="#" target="_blank" class="btn btn-outline btn-small" style="display:none; width:auto;">ðŸ“„ ØªØ­Ù…ÙŠÙ„ Ù…Ù„Ø®Øµ PDF</a>
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0;">فصول الدورة (Chapters)</h3>
+      <h3 style="margin-top:0;">ÙØµÙˆÙ„ Ø§Ù„Ø¯ÙˆØ±Ø© (Chapters)</h3>
       <div class="chapters-list" id="chapters-list"></div>
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0;">حالة سريرية: تفاعل دوائي محتمل</h3>
-      <p>مريضة تبلغ 45 عاماً تتناول Warfarin وتطلب صرف مسكن OTC. أي دواء يجب تجنّبه؟</p>
+      <h3 style="margin-top:0;">Ø­Ø§Ù„Ø© Ø³Ø±ÙŠØ±ÙŠØ©: ØªÙØ§Ø¹Ù„ Ø¯ÙˆØ§Ø¦ÙŠ Ù…Ø­ØªÙ…Ù„</h3>
+      <p>Ù…Ø±ÙŠØ¶Ø© ØªØ¨Ù„Øº 45 Ø¹Ø§Ù…Ø§Ù‹ ØªØªÙ†Ø§ÙˆÙ„ Warfarin ÙˆØªØ·Ù„Ø¨ ØµØ±Ù Ù…Ø³ÙƒÙ† OTC. Ø£ÙŠ Ø¯ÙˆØ§Ø¡ ÙŠØ¬Ø¨ ØªØ¬Ù†Ù‘Ø¨Ù‡ØŸ</p>
       <div id="case-options">
-        <button class="case-option" data-correct="false" onclick="answerCase(this,'باراسيتامول (جرعة منخفضة)')">باراسيتامول (جرعة منخفضة)</button>
-        <button class="case-option" data-correct="true" onclick="answerCase(this,'أسبرين / NSAIDs')">أسبرين / NSAIDs</button>
-        <button class="case-option" data-correct="false" onclick="answerCase(this,'مضاد حموضة موضعي')">مضاد حموضة موضعي</button>
+        <button class="case-option" data-correct="false" onclick="answerCase(this,'Ø¨Ø§Ø±Ø§Ø³ÙŠØªØ§Ù…ÙˆÙ„ (Ø¬Ø±Ø¹Ø© Ù…Ù†Ø®ÙØ¶Ø©)')">Ø¨Ø§Ø±Ø§Ø³ÙŠØªØ§Ù…ÙˆÙ„ (Ø¬Ø±Ø¹Ø© Ù…Ù†Ø®ÙØ¶Ø©)</button>
+        <button class="case-option" data-correct="true" onclick="answerCase(this,'Ø£Ø³Ø¨Ø±ÙŠÙ† / NSAIDs')">Ø£Ø³Ø¨Ø±ÙŠÙ† / NSAIDs</button>
+        <button class="case-option" data-correct="false" onclick="answerCase(this,'Ù…Ø¶Ø§Ø¯ Ø­Ù…ÙˆØ¶Ø© Ù…ÙˆØ¶Ø¹ÙŠ')">Ù…Ø¶Ø§Ø¯ Ø­Ù…ÙˆØ¶Ø© Ù…ÙˆØ¶Ø¹ÙŠ</button>
       </div>
       <p id="case-feedback" style="display:none; margin-top:12px; font-weight:600;"></p>
     </div>
 
   </div>
 
-  <!-- حالة تحميل أولية (تظهر لحظياً قبل تأكيد الاشتراك من عدمه) -->
+  <!-- Ø­Ø§Ù„Ø© ØªØ­Ù…ÙŠÙ„ Ø£ÙˆÙ„ÙŠØ© (ØªØ¸Ù‡Ø± Ù„Ø­Ø¸ÙŠØ§Ù‹ Ù‚Ø¨Ù„ ØªØ£ÙƒÙŠØ¯ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ Ù…Ù† Ø¹Ø¯Ù…Ù‡) -->
   <div id="loading-card" class="card">
-    <p style="text-align:center;color:var(--muted);">⏳ جارٍ التحقق من اشتراكك...</p>
+    <p style="text-align:center;color:var(--muted);">â³ Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ø´ØªØ±Ø§ÙƒÙƒ...</p>
   </div>
 
   <div class="card">
-    <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">↩️ الرجوع لقائمة الدورات</button>
-    <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+    <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">â†©ï¸ Ø§Ù„Ø±Ø¬ÙˆØ¹ Ù„Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø¯ÙˆØ±Ø§Øª</button>
+    <button class="btn btn-danger" onclick="logout()">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø®Ø±ÙˆØ¬</button>
   </div>
 
 </main>
 
 <nav class="bottom-nav">
-  <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
-  <a href="login.html"><span class="nav-icon">🔑</span>دخول</a>
-  <a href="courses.html" class="active"><span class="nav-icon">📚</span>الدورات</a>
+  <a href="index.html"><span class="nav-icon">ðŸ </span>Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</a>
+  <a href="login.html"><span class="nav-icon">ðŸ”‘</span>Ø¯Ø®ÙˆÙ„</a>
+  <a href="courses.html" class="active"><span class="nav-icon">ðŸ“š</span>Ø§Ù„Ø¯ÙˆØ±Ø§Øª</a>
+ "admin.html"
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -98,12 +99,12 @@
   let isEnrolled = false;
 
   if (!course) {
-    document.getElementById("course-title").textContent = "الدورة غير موجودة";
+    document.getElementById("course-title").textContent = "Ø§Ù„Ø¯ÙˆØ±Ø© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø©";
     document.getElementById("loading-card").style.display = "none";
   } else {
     document.getElementById("course-title").textContent = course.title;
-    document.getElementById("course-instructor").textContent = `${course.instructor} · ${course.instructorTitle}`;
-    document.getElementById("locked-price").textContent = `السعر: ${course.price} ${course.currency}`;
+    document.getElementById("course-instructor").textContent = `${course.instructor} Â· ${course.instructorTitle}`;
+    document.getElementById("locked-price").textContent = `Ø§Ù„Ø³Ø¹Ø±: ${course.price} ${course.currency}`;
   }
 
   listenToWallet((balance, enrolled) => {
@@ -125,7 +126,7 @@
       item.className = "chapter-item" + (ch.id === currentChapterId ? " active" : "");
       item.innerHTML = `
         <span class="ch-title">${ch.title}</span>
-        <span class="ch-duration">${ch.durationMinutes} د</span>
+        <span class="ch-duration">${ch.durationMinutes} Ø¯</span>
       `;
       item.onclick = () => loadChapter(ch.id);
       list.appendChild(item);
@@ -138,7 +139,7 @@
     if (!ch) return;
     document.getElementById("video-frame").src = buildDriveEmbedUrl(ch.driveId);
     document.getElementById("chapter-title").textContent = ch.title;
-    document.getElementById("chapter-duration").textContent = `⏱️ ${ch.durationMinutes} دقيقة`;
+    document.getElementById("chapter-duration").textContent = `â±ï¸ ${ch.durationMinutes} Ø¯Ù‚ÙŠÙ‚Ø©`;
     const pdfLink = document.getElementById("chapter-pdf-link");
     if (ch.summaryPdf) {
       pdfLink.href = ch.summaryPdf;
@@ -154,13 +155,13 @@
     try {
       const result = await enrollInCourse(course.id, course.price);
       if (result.alreadyEnrolled) {
-        alert("أنت مشترك بالفعل في هذه الدورة ✅");
+        alert("Ø£Ù†Øª Ù…Ø´ØªØ±Ùƒ Ø¨Ø§Ù„ÙØ¹Ù„ ÙÙŠ Ù‡Ø°Ù‡ Ø§Ù„Ø¯ÙˆØ±Ø© âœ…");
       }
     } catch (err) {
       if (err.message === "INSUFFICIENT_BALANCE") {
-        alert("رصيدك غير كافٍ. الرجاء شحن المحفظة أولاً.");
+        alert("Ø±ØµÙŠØ¯Ùƒ ØºÙŠØ± ÙƒØ§ÙÙ. Ø§Ù„Ø±Ø¬Ø§Ø¡ Ø´Ø­Ù† Ø§Ù„Ù…Ø­ÙØ¸Ø© Ø£ÙˆÙ„Ø§Ù‹.");
       } else {
-        alert("حدث خطأ: " + err.message);
+        alert("Ø­Ø¯Ø« Ø®Ø·Ø£: " + err.message);
       }
     }
   }
@@ -172,10 +173,11 @@
     const feedback = document.getElementById("case-feedback");
     feedback.style.display = "block";
     feedback.textContent = correct
-      ? "✅ إجابة صحيحة: يجب تجنّب الأسبرين ومضادات الالتهاب غير الستيرويدية مع الوارفارين لخطر النزيف."
-      : "❌ إجابة غير صحيحة. الإجابة الصحيحة: أسبرين / NSAIDs.";
+      ? "âœ… Ø¥Ø¬Ø§Ø¨Ø© ØµØ­ÙŠØ­Ø©: ÙŠØ¬Ø¨ ØªØ¬Ù†Ù‘Ø¨ Ø§Ù„Ø£Ø³Ø¨Ø±ÙŠÙ† ÙˆÙ…Ø¶Ø§Ø¯Ø§Øª Ø§Ù„Ø§Ù„ØªÙ‡Ø§Ø¨ ØºÙŠØ± Ø§Ù„Ø³ØªÙŠØ±ÙˆÙŠØ¯ÙŠØ© Ù…Ø¹ Ø§Ù„ÙˆØ§Ø±ÙØ§Ø±ÙŠÙ† Ù„Ø®Ø·Ø± Ø§Ù„Ù†Ø²ÙŠÙ."
+      : "âŒ Ø¥Ø¬Ø§Ø¨Ø© ØºÙŠØ± ØµØ­ÙŠØ­Ø©. Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø© Ø§Ù„ØµØ­ÙŠØ­Ø©: Ø£Ø³Ø¨Ø±ÙŠÙ† / NSAIDs.";
     saveClinicalCaseResult("case-otc-warfarin", correct ? 100 : 0, { answer: answerText });
   }
 </script>
 </body>
 </html>
+

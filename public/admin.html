@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>لوحة تحكم المدير | Al-Jawda Pharmacy Academy</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0e7c66" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
+  <h1>👑 لوحة تحكم المدير</h1>
+  <p class="slogan" id="admin-email">جارٍ التحقق...</p>
+</header>
+
+<main class="container">
+
+  <!-- رسالة رفض الوصول -->
+  <div id="access-denied" class="card" style="display:none; text-align:center;">
+    <div style="font-size:2.5rem;">🚫</div>
+    <h3>هذه الصفحة مخصصة لمدير الأكاديمية فقط</h3>
+    <p style="color:var(--muted);">حسابك الحالي لا يملك صلاحية الوصول إلى لوحة التحكم.</p>
+    <button class="btn btn-primary" onclick="window.location.href='courses.html'">الرجوع لصفحة الدورات</button>
+  </div>
+
+  <!-- مؤشر تحميل -->
+  <div id="loading-indicator" class="card" style="text-align:center;">
+    <p style="color:var(--muted);">⏳ جارٍ التحقق من صلاحياتك وتحميل البيانات...</p>
+  </div>
+
+  <!-- محتوى اللوحة (يظهر فقط بعد التحقق من صلاحية admin) -->
+  <div id="admin-content" style="display:none;">
+
+    <div class="card sync-indicator" style="display:flex; justify-content:space-between; align-items:center;">
+      <span><span class="dot"></span> بيانات حيّة من Firestore (وضع القراءة فقط)</span>
+      <button class="btn btn-outline btn-small" onclick="refreshAdminData()">🔄 تحديث</button>
+    </div>
+
+    <!-- تبويبات -->
+    <div class="tabs">
+      <button class="tab-btn admin-tab-btn active" onclick="showAdminTab('overview', this)">📊 نظرة عامة</button>
+      <button class="tab-btn admin-tab-btn" onclick="showAdminTab('students', this)">👥 الطلاب</button>
+      <button class="tab-btn admin-tab-btn" onclick="showAdminTab('cases', this)">🩺 الحالات السريرية</button>
+      <button class="tab-btn admin-tab-btn" onclick="showAdminTab('courses', this)">📚 إحصائيات الدورات</button>
+    </div>
+
+    <!-- تبويب 1: نظرة عامة -->
+    <section id="admin-tab-overview">
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="stat-total-users">—</div>
+          <div class="stat-label">إجمالي المستخدمين</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="stat-total-wallet">—</div>
+          <div class="stat-label">إجمالي أرصدة المحافظ</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value" id="stat-total-enrollments">—</div>
+          <div class="stat-label">إجمالي الاشتراكات</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-icon">🩺</div>
+          <div class="stat-value" id="stat-total-cases">—</div>
+          <div class="stat-label">محاولات الحالات السريرية</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-value" id="stat-avg-score">—</div>
+          <div class="stat-label">متوسط الدرجات</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- تبويب 2: الطلاب -->
+    <section id="admin-tab-students" style="display:none;">
+      <div class="card">
+        <h3 style="margin-top:0;">قائمة المستخدمين</h3>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>البريد الإلكتروني</th>
+                <th>الدور</th>
+                <th>رصيد المحفظة</th>
+                <th>عدد الدورات</th>
+                <th>آخر دخول</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- تبويب 3: الحالات السريرية -->
+    <section id="admin-tab-cases" style="display:none;">
+      <div class="card">
+        <h3 style="margin-top:0;">محاولات حل الحالات السريرية</h3>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>الطالب</th>
+                <th>الحالة</th>
+                <th>الدرجة</th>
+                <th>الإجابة المختارة</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="cases-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- تبويب 4: إحصائيات الدورات -->
+    <section id="admin-tab-courses" style="display:none;">
+      <div class="card">
+        <h3 style="margin-top:0;">أداء الدورات</h3>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>الدورة</th>
+                <th>المدرّس</th>
+                <th>عدد المشتركين</th>
+                <th>الإيرادات التقديرية</th>
+              </tr>
+            </thead>
+            <tbody id="courses-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="card">
+      <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">↩️ الرجوع لصفحة الدورات</button>
+      <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+    </div>
+
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
+  <a href="courses.html"><span class="nav-icon">📚</span>الدورات</a>
+  <a href="admin.html" class="active"><span class="nav-icon">👑</span>الإدارة</a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/courses-data.js"></script>
+<script src="js/admin.js"></script>
+<script>
+  requireAdmin();
+</script>
+</body>
+</html>

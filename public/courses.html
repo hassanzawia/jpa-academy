@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>الدورات التدريبية | Al-Jawda Pharmacy Academy</title>
+<title>Ø§Ù„Ø¯ÙˆØ±Ø§Øª Ø§Ù„ØªØ¯Ø±ÙŠØ¨ÙŠØ© | Al-Jawda Pharmacy Academy</title>
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#0e7c66" />
 <link rel="stylesheet" href="css/style.css" />
@@ -11,19 +11,19 @@
 <body>
 
 <header class="header">
-  <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
-  <h1>الدورات التدريبية</h1>
-  <p class="slogan" id="welcome-user">مرحباً بك</p>
+  <div class="logo-badge">JPA Â· Al-Jawda Pharmacy Academy</div>
+  <h1>Ø§Ù„Ø¯ÙˆØ±Ø§Øª Ø§Ù„ØªØ¯Ø±ÙŠØ¨ÙŠØ©</h1>
+  <p class="slogan" id="welcome-user">Ù…Ø±Ø­Ø¨Ø§Ù‹ Ø¨Ùƒ</p>
 </header>
 
 <main class="container">
 
   <div class="wallet-bar">
     <div>
-      <div class="label">رصيد محفظتك</div>
-      <div class="balance" id="wallet-balance">... جارٍ التحميل</div>
+      <div class="label">Ø±ØµÙŠØ¯ Ù…Ø­ÙØ¸ØªÙƒ</div>
+      <div class="balance" id="wallet-balance">... Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„</div>
     </div>
-    <button class="btn btn-outline btn-small" style="background:#fff;" onclick="requestTopUp()">شحن الرصيد</button>
+    <button class="btn btn-outline btn-small" style="background:#fff;" onclick="requestTopUp()">Ø´Ø­Ù† Ø§Ù„Ø±ØµÙŠØ¯</button>
   </div>
 
   <div class="category-filters" id="category-filters"></div>
@@ -33,9 +33,10 @@
 </main>
 
 <nav class="bottom-nav">
-  <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
-  <a href="login.html"><span class="nav-icon">🔑</span>دخول</a>
-  <a href="courses.html" class="active"><span class="nav-icon">📚</span>الدورات</a>
+  <a href="index.html"><span class="nav-icon">ðŸ </span>Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</a>
+  <a href="login.html"><span class="nav-icon">ðŸ”‘</span>Ø¯Ø®ÙˆÙ„</a>
+  <a href="courses.html" class="active"><span class="nav-icon">ðŸ“š</span>Ø§Ù„Ø¯ÙˆØ±Ø§Øª</a>
+ "admin.html"
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -48,26 +49,26 @@
 <script>
   requireAuth();
 
-  // ⚠️ إصلاح مهم: نعرض بطاقات الدورات فوراً بقيم افتراضية (رصيد 0، بدون اشتراكات)
-  // دون انتظار استجابة Firebase، حتى لا تختفي القائمة إن تأخر الاتصال.
-  // بمجرد وصول بيانات Firestore الحقيقية عبر listenToWallet، يُعاد رسم كل شيء بالقيم الصحيحة.
+  // âš ï¸ Ø¥ØµÙ„Ø§Ø­ Ù…Ù‡Ù…: Ù†Ø¹Ø±Ø¶ Ø¨Ø·Ø§Ù‚Ø§Øª Ø§Ù„Ø¯ÙˆØ±Ø§Øª ÙÙˆØ±Ø§Ù‹ Ø¨Ù‚ÙŠÙ… Ø§ÙØªØ±Ø§Ø¶ÙŠØ© (Ø±ØµÙŠØ¯ 0ØŒ Ø¨Ø¯ÙˆÙ† Ø§Ø´ØªØ±Ø§ÙƒØ§Øª)
+  // Ø¯ÙˆÙ† Ø§Ù†ØªØ¸Ø§Ø± Ø§Ø³ØªØ¬Ø§Ø¨Ø© FirebaseØŒ Ø­ØªÙ‰ Ù„Ø§ ØªØ®ØªÙÙŠ Ø§Ù„Ù‚Ø§Ø¦Ù…Ø© Ø¥Ù† ØªØ£Ø®Ø± Ø§Ù„Ø§ØªØµØ§Ù„.
+  // Ø¨Ù…Ø¬Ø±Ø¯ ÙˆØµÙˆÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Firestore Ø§Ù„Ø­Ù‚ÙŠÙ‚ÙŠØ© Ø¹Ø¨Ø± listenToWalletØŒ ÙŠÙØ¹Ø§Ø¯ Ø±Ø³Ù… ÙƒÙ„ Ø´ÙŠØ¡ Ø¨Ø§Ù„Ù‚ÙŠÙ… Ø§Ù„ØµØ­ÙŠØ­Ø©.
   let currentBalance = 0;
   let currentEnrolled = [];
   let activeCategory = "all";
 
   auth.onAuthStateChanged((user) => {
-    if (user) document.getElementById("welcome-user").textContent = "مرحباً، " + user.email;
+    if (user) document.getElementById("welcome-user").textContent = "Ù…Ø±Ø­Ø¨Ø§Ù‹ØŒ " + user.email;
   });
 
-  // رسم أولي فوري (defense-in-depth) حتى لا تظهر الصفحة فارغة أبداً
+  // Ø±Ø³Ù… Ø£ÙˆÙ„ÙŠ ÙÙˆØ±ÙŠ (defense-in-depth) Ø­ØªÙ‰ Ù„Ø§ ØªØ¸Ù‡Ø± Ø§Ù„ØµÙØ­Ø© ÙØ§Ø±ØºØ© Ø£Ø¨Ø¯Ø§Ù‹
   renderCategoryFilters();
   renderCourses();
 
-  // تحديث حي بمجرد جاهزية Firestore
+  // ØªØ­Ø¯ÙŠØ« Ø­ÙŠ Ø¨Ù…Ø¬Ø±Ø¯ Ø¬Ø§Ù‡Ø²ÙŠØ© Firestore
   listenToWallet((balance, enrolled) => {
     currentBalance = balance;
     currentEnrolled = enrolled;
-    document.getElementById("wallet-balance").textContent = balance + " د.ل";
+    document.getElementById("wallet-balance").textContent = balance + " Ø¯.Ù„";
     renderCourses();
   });
 
@@ -76,7 +77,7 @@
     container.innerHTML = "";
     const allChip = document.createElement("button");
     allChip.className = "category-chip active";
-    allChip.textContent = "🔎 الكل";
+    allChip.textContent = "ðŸ”Ž Ø§Ù„ÙƒÙ„";
     allChip.onclick = () => selectCategory("all", allChip);
     container.appendChild(allChip);
 
@@ -106,25 +107,25 @@
       const card = document.createElement("div");
       card.className = "course-card";
       card.innerHTML = `
-        <div class="thumb">📖</div>
+        <div class="thumb">ðŸ“–</div>
         <div class="body">
-          <div class="instructor">${course.instructor} · ${course.instructorTitle}</div>
+          <div class="instructor">${course.instructor} Â· ${course.instructorTitle}</div>
           <h3>${course.title}</h3>
           <p class="desc">${course.description}</p>
         </div>
         <div class="footer-row">
           ${isEnrolled
-            ? '<span class="enrolled-badge">✅ مشترك</span>'
+            ? '<span class="enrolled-badge">âœ… Ù…Ø´ØªØ±Ùƒ</span>'
             : `<span class="price-tag">${course.price} <span class="currency">${course.currency}</span></span>`
           }
-          <button class="btn btn-primary btn-small" onclick="openCourse('${course.id}')">${isEnrolled ? "متابعة الدورة" : "التفاصيل والاشتراك"}</button>
+          <button class="btn btn-primary btn-small" onclick="openCourse('${course.id}')">${isEnrolled ? "Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ø¯ÙˆØ±Ø©" : "Ø§Ù„ØªÙØ§ØµÙŠÙ„ ÙˆØ§Ù„Ø§Ø´ØªØ±Ø§Ùƒ"}</button>
         </div>
       `;
       grid.appendChild(card);
     });
 
     if (list.length === 0) {
-      grid.innerHTML = '<p style="text-align:center;color:var(--muted);">لا توجد دورات في هذا التصنيف حالياً.</p>';
+      grid.innerHTML = '<p style="text-align:center;color:var(--muted);">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¯ÙˆØ±Ø§Øª ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„ØªØµÙ†ÙŠÙ Ø­Ø§Ù„ÙŠØ§Ù‹.</p>';
     }
   }
 
@@ -133,8 +134,9 @@
   }
 
   function requestTopUp() {
-    alert("لشحن رصيد محفظتك، تواصل مع إدارة المنصة عبر واتساب أو زر لوحة المدير (نظام دفع حقيقي يمكن ربطه لاحقاً).");
+    alert("Ù„Ø´Ø­Ù† Ø±ØµÙŠØ¯ Ù…Ø­ÙØ¸ØªÙƒØŒ ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ù†ØµØ© Ø¹Ø¨Ø± ÙˆØ§ØªØ³Ø§Ø¨ Ø£Ùˆ Ø²Ø± Ù„ÙˆØ­Ø© Ø§Ù„Ù…Ø¯ÙŠØ± (Ù†Ø¸Ø§Ù… Ø¯ÙØ¹ Ø­Ù‚ÙŠÙ‚ÙŠ ÙŠÙ…ÙƒÙ† Ø±Ø¨Ø·Ù‡ Ù„Ø§Ø­Ù‚Ø§Ù‹).");
   }
 </script>
 </body>
 </html>
+

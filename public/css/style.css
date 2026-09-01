@@ -169,3 +169,33 @@ video { width: 100%; border-radius: var(--radius); background: #000; }
   gap: 10px; padding: 30px 16px; text-align: center;
 }
 .locked-overlay .lock-icon { font-size: 2.5rem; }
+
+/* ============================================================
+   لوحة تحكم المدير (Admin Dashboard)
+   ============================================================ */
+
+.admin-stats-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;
+}
+.admin-stat-card {
+  background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 18px 14px; text-align: center;
+}
+.admin-stat-card .stat-icon { font-size: 1.7rem; margin-bottom: 6px; }
+.admin-stat-card .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+.admin-stat-card .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+.table-wrap { overflow-x: auto; }
+.admin-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem; white-space: nowrap;
+}
+.admin-table thead th {
+  background: #f0f7f5; color: var(--primary); text-align: right; padding: 10px 12px;
+  border-bottom: 2px solid #d6e8e3; position: sticky; top: 0;
+}
+.admin-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid #eef2f1;
+}
+.admin-table tbody tr:hover { background: #fafcfb; }
+.score-good { color: #2fa864; font-weight: 700; }
+.score-bad { color: var(--danger); font-weight: 700; }
