@@ -17,11 +17,11 @@ const auth = admin.auth();
 const db = admin.firestore();
 
 const ACCOUNTS = [
-  { email: "dr_sarah@jpa-academy.com", password: "sarah@2026", role: "صيدلي إكلينيكي", isAdmin: false },
-  { email: "ahmed_pharma@jpa-academy.com", password: "ahmed@123", role: "طالب صيدلة (سنة تخرج)", isAdmin: false },
-  { email: "nour_intern@jpa-academy.com", password: "nour@pass", role: "صيدلي امتياز متدرب", isAdmin: false },
-  { email: "dr_tariq@jpa-academy.com", password: "tariq@med26", role: "طبيب بشري مراجع سريري", isAdmin: false },
-  { email: "admin_jawda@jpa-academy.com", password: "admin@jawda2026", role: "مدير الأكاديمية (Admin)", isAdmin: true }
+  { email: "dr_sarah@jpa-academy.com", password: "sarah@2026", role: "صيدلي إكلينيكي", isAdmin: false, walletBalance: 200 },
+  { email: "ahmed_pharma@jpa-academy.com", password: "ahmed@123", role: "طالب صيدلة (سنة تخرج)", isAdmin: false, walletBalance: 150 },
+  { email: "nour_intern@jpa-academy.com", password: "nour@pass", role: "صيدلي امتياز متدرب", isAdmin: false, walletBalance: 100 },
+  { email: "dr_tariq@jpa-academy.com", password: "tariq@med26", role: "طبيب بشري مراجع سريري", isAdmin: false, walletBalance: 200 },
+  { email: "admin_jawda@jpa-academy.com", password: "admin@jawda2026", role: "مدير الأكاديمية (Admin)", isAdmin: true, walletBalance: 999999 }
 ];
 
 async function seed() {
@@ -51,6 +51,8 @@ async function seed() {
           role: acc.role,
           isAdmin: acc.isAdmin,
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          walletBalance: acc.walletBalance,
+          enrolledCourses: [],
           progress: {}
         },
         { merge: true }
@@ -59,7 +61,7 @@ async function seed() {
       console.error(`❌ خطأ في إنشاء ${acc.email}:`, err.message);
     }
   }
-  console.log("\nانتهى إنشاء جميع الحسابات التجريبية.");
+  console.log("\nانتهى إنشاء جميع الحسابات التجريبية (مع تعبئة رصيد المحفظة الافتراضي).");
   process.exit(0);
 }
 

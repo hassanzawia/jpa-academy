@@ -41,7 +41,7 @@
 <nav class="bottom-nav">
   <a href="index.html"><span class="nav-icon">🏠</span>الرئيسية</a>
   <a href="login.html" class="active"><span class="nav-icon">🔑</span>دخول</a>
-  <a href="pilot.html"><span class="nav-icon">🎬</span>المحاضرات</a>
+  <a href="courses.html"><span class="nav-icon">📚</span>الدورات</a>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -63,7 +63,7 @@
   }
 
   auth.onAuthStateChanged((user) => {
-    if (user) window.location.href = "pilot.html";
+    if (user) window.location.href = "courses.html";
   });
 </script>
 </body>

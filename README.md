@@ -1,10 +1,17 @@
 # منصة الجودة للفارمسي أكاديمي (Al-Jawda Pharmacy Academy - JPA)
 
-منصة تعليمية بمعمارية **PWA** مبنية بـ HTML/CSS/JS خالص، مربوطة بـ **Firebase (مجاني - Spark Plan)** لتوفير:
-- **Authentication** (تسجيل دخول حقيقي بدل localStorage)
-- **Cloud Firestore** (مزامنة فورية للبيانات بين الهاتف والويب - Realtime Sync)
-- **Firebase Hosting** و/أو **GitHub Pages** (استضافة مجانية + SSL + CDN)
-- **GitHub Actions** (نشر تلقائي عند كل `push` إلى `main`)
+منصة تعليمية بمعمارية **PWA** مبنية بـ HTML/CSS/JS خالص، مربوطة بـ **Firebase (مجاني - Spark Plan)**، ومستوحاة من ميزات منصة **إيضاح (Edah)** التعليمية الليبية.
+
+## ✨ الميزات
+
+- **Authentication** (تسجيل دخول حقيقي عبر Firebase)
+- **Cloud Firestore** (مزامنة فورية للبيانات بين الهاتف والويب)
+- **📚 كتالوج دورات مصنّف** (طب، لغات، مناهج ثانوية، حرف مهنية) — مثل إيضاح
+- **💰 نظام محفظة رصيد** للاشتراك في الدورات
+- **📖 فصول (Chapters)** منظّمة لكل دورة، مع مدرّس مخصص لكل مادة
+- **🎥 فيديوهات مستضافة على Google Drive** (بدلاً من الرفع المباشر لـ GitHub)
+- **GitHub Pages / Firebase Hosting** (استضافة مجانية + SSL + CDN)
+- **GitHub Actions** (نشر تلقائي عند كل `push`)
 
 ---
 
@@ -12,76 +19,72 @@
 
 ```
 pharmacademy/
-├─ public/                 ← جذر الاستضافة (كل ما يُنشر فعلياً)
-│  ├─ index.html           ← الصفحة الرئيسية
-│  ├─ login.html           ← تسجيل الدخول + حسابات تجريبية
-│  ├─ pilot.html           ← المحاضرات + المحاكي السريري (محمي بالدخول)
-│  ├─ manifest.json        ← إعدادات PWA
-│  ├─ service-worker.js    ← عمل بدون اتصال
+├─ public/
+│  ├─ index.html              ← الصفحة الرئيسية
+│  ├─ login.html               ← تسجيل الدخول + حسابات تجريبية
+│  ├─ courses.html              ← كتالوج الدورات (تصنيفات + محفظة رصيد)
+│  ├─ course-player.html        ← مشغّل الدورة (فصول + فيديو Google Drive)
+│  ├─ pilot.html                ← إعادة توجيه تلقائي إلى courses.html (توافق سابق)
+│  ├─ manifest.json / service-worker.js
 │  ├─ css/style.css
-│  ├─ js/firebase-config.js← إعدادات مشروعك في Firebase (يجب تعديلها)
-│  ├─ js/auth.js           ← منطق الدخول/الخروج
-│  ├─ js/sync.js           ← مزامنة التقدم والحالات السريرية
-│  └─ assets/              ← ضع هنا الشعار والفيديوهات والأيقونات
-├─ firebase.json           ← إعداد Firebase Hosting + Firestore
-├─ .firebaserc             ← اسم مشروع Firebase
-├─ firestore.rules         ← قواعد الأمان (كل مستخدم يرى بياناته فقط)
-├─ firestore.indexes.json
-├─ scripts/
-│  ├─ seed-users.js        ← إنشاء الحسابات التجريبية الخمسة تلقائياً
-│  └─ package.json
-├─ .github/workflows/
-│  ├─ firebase-hosting.yml     ← نشر تلقائي إلى Firebase Hosting
-│  └─ github-pages.yml         ← نشر تلقائي إلى GitHub Pages
-├─ DEPLOYMENT_GUIDE.md     ← دليل نشر Firebase التفصيلي (30 خطوة)
-├─ GITHUB_PAGES_GUIDE.md   ← دليل استضافة GitHub Pages التفصيلي
+│  ├─ js/firebase-config.js    ← إعدادات Firebase (مكتملة لمشروع pharmacyacadimy)
+│  ├─ js/auth.js                ← منطق الدخول/الخروج
+│  ├─ js/sync.js                ← مزامنة المحفظة، الاشتراكات، والتقدّم
+│  ├─ js/courses-data.js        ← بيانات الدورات والفصول (عدّل هنا لإضافة دورات)
+│  └─ assets/                   ← صور الدورات، أيقونات PWA، ملفات PDF
+├─ firebase.json / .firebaserc / firestore.rules / firestore.indexes.json
+├─ scripts/seed-users.js        ← إنشاء الحسابات التجريبية + رصيد محفظة ابتدائي
+├─ .github/workflows/           ← نشر تلقائي (GitHub Pages + Firebase Hosting)
+├─ DEPLOYMENT_GUIDE.md          ← دليل نشر Firebase التفصيلي
+├─ GITHUB_PAGES_GUIDE.md        ← دليل استضافة GitHub Pages
+├─ GITHUB_SETUP_HASSANZAWIA.md  ← دليل مخصص لحسابك (hassanzawia/jpa-academy)
+├─ GOOGLE_DRIVE_VIDEOS_GUIDE.md ← 🆕 كيفية رفع وربط فيديوهات Google Drive
 └─ .gitignore
 ```
 
 ---
 
-## 🚀 من أين أبدأ؟
+## 👥 الحسابات التجريبية (مع رصيد محفظة ابتدائي)
 
-1. اقرأ **`DEPLOYMENT_GUIDE.md`** للنشر عبر **Firebase Hosting** (الطريقة الأساسية، تتضمن كل خطوات إعداد Firebase نفسه).
-2. اقرأ **`GITHUB_PAGES_GUIDE.md`** إن أردت استضافة إضافية أو بديلة عبر **GitHub Pages** (يعمل مع نفس مشروع Firebase للـ Auth/Firestore).
+| الدور | البريد | كلمة المرور | الرصيد الابتدائي |
+|---|---|---|---|
+| صيدلي إكلينيكي | dr_sarah@jpa-academy.com | sarah@2026 | 200 د.ل |
+| طالب صيدلة | ahmed_pharma@jpa-academy.com | ahmed@123 | 150 د.ل |
+| صيدلي امتياز متدرب | nour_intern@jpa-academy.com | nour@pass | 100 د.ل |
+| طبيب بشري مراجع سريري | dr_tariq@jpa-academy.com | tariq@med26 | 200 د.ل |
+| مدير الأكاديمية (Admin) | admin_jawda@jpa-academy.com | admin@jawda2026 | غير محدود |
 
-كلا الدليلين مكتوبان بالعربية بتفصيل كامل خطوة بخطوة، بدون افتراض أي خبرة تقنية مسبقة.
-
----
-
-## 👥 الحسابات التجريبية الخمسة
-
-| الدور | البريد | كلمة المرور |
-|---|---|---|
-| صيدلي إكلينيكي | dr_sarah@jpa-academy.com | sarah@2026 |
-| طالب صيدلة | ahmed_pharma@jpa-academy.com | ahmed@123 |
-| صيدلي امتياز متدرب | nour_intern@jpa-academy.com | nour@pass |
-| طبيب بشري مراجع سريري | dr_tariq@jpa-academy.com | tariq@med26 |
-| مدير الأكاديمية (Admin) | admin_jawda@jpa-academy.com | admin@jawda2026 |
-
-تُنشأ هذه الحسابات فعلياً عبر تشغيل `scripts/seed-users.js` (موضّح بالتفصيل في `DEPLOYMENT_GUIDE.md`).
+> ملاحظة: إن كنت قد شغّلت `seed-users.js` من قبل، شغّله مرة أخرى لإضافة حقول `walletBalance` و`enrolledCourses` الجديدة (لن يؤثر على الحسابات الموجودة، فقط يضيف الحقول الناقصة).
 
 ---
 
-## 🔄 كيف تعمل المزامنة الكاملة (Full Sync)؟
+## 🎥 إضافة فيديوهات الدورات (Google Drive)
 
-- عند تسجيل الدخول، يُنشأ مستند للمستخدم في `users/{uid}` على Firestore.
-- أي تقدّم في المحاضرات (`saveProgress`) أو نتائج الحالات السريرية (`saveClinicalCaseResult`) يُكتب فوراً في Firestore.
-- صفحة `pilot.html` تستمع (`onSnapshot`) لتغييرات المستند لحظياً؛ فإن فتحت الحساب من الهاتف بعد الويب (أو العكس) ستجد آخر نقطة توقف والنتائج محدّثة تلقائياً دون تحديث يدوي.
-- تم تفعيل **Offline Persistence**، لذا التطبيق يعمل حتى بدون إنترنت ويُزامن تلقائياً عند عودة الاتصال.
+بدلاً من رفع الفيديوهات إلى GitHub، ارفعها على Google Drive واربطها بمعرّف الملف فقط. الطريقة الكاملة موضحة في **`GOOGLE_DRIVE_VIDEOS_GUIDE.md`**.
+
+خطوات سريعة:
+1. ارفع الفيديو إلى Google Drive.
+2. اضبط المشاركة على "Anyone with the link" (Viewer).
+3. انسخ معرّف الملف (File ID) من رابط المشاركة.
+4. الصقه في `public/js/courses-data.js` ضمن حقل `driveId` للفصل المناسب.
+5. ادفع (`git push`) — سيُنشر تلقائياً.
 
 ---
 
-## 💰 حدود الباقة المجانية (Spark Plan)
+## 📚 إضافة دورة أو فصل جديد
 
-| الخدمة | الحد المجاني الشهري |
+عدّل `public/js/courses-data.js` مباشرة — أضف كائناً جديداً في مصفوفة `COURSES` أو `chapters`. لا حاجة لتعديل أي ملف HTML، الموقع يقرأ البيانات ديناميكياً.
+
+---
+
+## 💰 حدود الباقات المجانية
+
+| الخدمة | الحد المجاني |
 |---|---|
-| Firebase Hosting | 10 GB نقل بيانات / 360 MB تخزين |
+| Firebase Hosting | 10 GB نقل بيانات / 360 MB تخزين شهرياً |
 | Firestore | 50K قراءة / 20K كتابة / 20K حذف يومياً |
-| Authentication | غير محدود عملياً للاستخدام العادي |
-| GitHub Pages | غير محدود عملياً للمواقع الثابتة (استخدام معقول) |
-
-هذا كافٍ تماماً لمرحلة MVP والتجربة التجريبية (Pilot) الحالية.
+| GitHub Pages | استخدام معقول غير محدود عملياً |
+| Google Drive | 15 GB تخزين مجاني للفيديوهات |
 
 ---
 

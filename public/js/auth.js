@@ -1,6 +1,5 @@
 // =====================================================================
 // منطق تسجيل الدخول / الخروج - Auth Logic
-// يعتمد على Firebase Authentication + Firestore (مزامنة كاملة بين الأجهزة)
 // =====================================================================
 
 const DEMO_ACCOUNTS = [
@@ -15,7 +14,7 @@ function loginWithEmail(email, password) {
   return auth.signInWithEmailAndPassword(email, password)
     .then(async (cred) => {
       await ensureUserProfile(cred.user);
-      window.location.href = "pilot.html";
+      window.location.href = "courses.html";
     });
 }
 
@@ -27,6 +26,8 @@ async function ensureUserProfile(user) {
       email: user.email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+      walletBalance: 0,
+      enrolledCourses: [],
       progress: {}
     });
   } else {

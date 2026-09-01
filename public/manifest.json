@@ -1,7 +1,7 @@
 {
   "name": "منصة الجودة للفارمسي أكاديمي - Al-Jawda Pharmacy Academy",
   "short_name": "JPA Academy",
-  "description": "منصة تعليمية متخصصة في المجال الصيدلي والطبي - محاكاة سريرية وتعليم مستمر",
+  "description": "منصة تعليمية متخصصة في المجال الصيدلي والطبي - دورات متعددة، محاكاة سريرية، ومحفظة رصيد",
   "start_url": "index.html",
   "scope": ".",
   "display": "standalone",

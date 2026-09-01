@@ -17,7 +17,7 @@ const firebaseConfig = {
 // تهيئة Firebase (Compat SDK - يعمل مباشرة عبر <script> بدون bundler)
 firebase.initializeApp(firebaseConfig);
 
-// تفعيل Google Analytics (اختياري - يعمل تلقائياً إن كانت مكتبة firebase-analytics-compat محمّلة في الصفحة)
+// تفعيل Google Analytics (اختياري)
 if (typeof firebase.analytics === "function") {
   try { firebase.analytics(); } catch (e) { /* Analytics غير محمّلة في هذه الصفحة، لا مشكلة */ }
 }
