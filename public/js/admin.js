@@ -1,18 +1,18 @@
 // =====================================================================
 // لوحة تحكم المدير - منصة الجودة للفارمسي أكاديمي
-// نسخة عرض فقط (Read-Only Dashboard)
+// v2: يشمل الآن ميزة شحن الرصيد يدوياً (Manual Wallet Top-up)
 // =====================================================================
 //
-// ⚠️ هذا الملف يعتمد على أن الحساب الحالي يملك Custom Claim: admin = true
-// (تم منحه تلقائياً لحساب admin_jawda عبر scripts/seed-users.js)
-// وأن firestore.rules تسمح بالقراءة الشاملة فقط لهذا النوع من الحسابات:
-//   match /{document=**} {
-//     allow read: if request.auth != null && request.auth.token.admin == true;
-//   }
+// ⚠️ يعتمد على أن الحساب الحالي يملك Custom Claim: admin = true
+// وأن firestore.rules تسمح بـ:
+//   - القراءة الشاملة لحساب المدير
+//   - تحديث حقل walletBalance فقط (وليس أي حقل آخر) لأي مستخدم
 // =====================================================================
 
 let allUsers = [];
 let allClinicalCases = [];
+let topupTargetUid = null;
+let topupTargetEmail = null;
 
 // ---------------------------------------------------------------------
 // التحقق من صلاحية المدير قبل عرض أي محتوى
@@ -25,7 +25,7 @@ function requireAdmin() {
       return;
     }
     try {
-      const tokenResult = await user.getIdTokenResult(true); // true = force refresh
+      const tokenResult = await user.getIdTokenResult(true);
       if (tokenResult.claims.admin === true) {
         document.getElementById("admin-email").textContent = user.email;
         loadAllData();
@@ -42,10 +42,11 @@ function requireAdmin() {
 function showAccessDenied() {
   document.getElementById("admin-content").style.display = "none";
   document.getElementById("access-denied").style.display = "block";
+  document.getElementById("loading-indicator").style.display = "none";
 }
 
 // ---------------------------------------------------------------------
-// جلب كل البيانات دفعة واحدة (مناسب لحجم بيانات صغير-متوسط)
+// جلب كل البيانات دفعة واحدة
 // ---------------------------------------------------------------------
 
 async function loadAllData() {
@@ -100,7 +101,7 @@ function renderOverview() {
 }
 
 // ---------------------------------------------------------------------
-// 2) إدارة الطلاب (Students Table)
+// 2) إدارة الطلاب (Students Table) + زر شحن الرصيد
 // ---------------------------------------------------------------------
 
 function renderStudentsTable() {
@@ -108,11 +109,10 @@ function renderStudentsTable() {
   tbody.innerHTML = "";
 
   if (allUsers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">لا يوجد مستخدمون بعد</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);">لا يوجد مستخدمون بعد</td></tr>';
     return;
   }
 
-  // ترتيب حسب آخر دخول (الأحدث أولاً)
   const sorted = [...allUsers].sort((a, b) => {
     const aTime = a.lastLogin?.seconds || 0;
     const bTime = b.lastLogin?.seconds || 0;
@@ -131,9 +131,70 @@ function renderStudentsTable() {
       <td>${(u.walletBalance ?? 0).toLocaleString()} د.ل</td>
       <td>${(u.enrolledCourses || []).length}</td>
       <td>${lastLoginStr}</td>
+      <td><button class="btn btn-primary btn-small" onclick="openTopUpModal('${u.id}', '${(u.email || "").replace(/'/g, "\\'")}')">💰 شحن</button></td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+// ---------------------------------------------------------------------
+// 🆕 نافذة شحن الرصيد (Top-up Modal)
+// ---------------------------------------------------------------------
+
+function openTopUpModal(uid, email) {
+  topupTargetUid = uid;
+  topupTargetEmail = email;
+  document.getElementById("topup-user-email").textContent = email;
+  document.getElementById("topup-amount").value = "";
+  document.getElementById("topup-note").value = "";
+  document.getElementById("topup-error").style.display = "none";
+  document.getElementById("topup-modal").style.display = "flex";
+}
+
+function closeTopUpModal() {
+  document.getElementById("topup-modal").style.display = "none";
+  topupTargetUid = null;
+  topupTargetEmail = null;
+}
+
+async function submitTopUp() {
+  const amountInput = document.getElementById("topup-amount");
+  const noteInput = document.getElementById("topup-note");
+  const errBox = document.getElementById("topup-error");
+  const submitBtn = document.getElementById("topup-submit-btn");
+
+  const amount = parseFloat(amountInput.value);
+
+  if (!topupTargetUid) return;
+
+  if (isNaN(amount) || amount === 0) {
+    errBox.textContent = "⚠️ الرجاء إدخال مبلغ صحيح (استخدم رقماً سالباً للخصم، مثل -50)";
+    errBox.style.display = "block";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "جارٍ التنفيذ...";
+
+  try {
+    await topUpWalletForUser(topupTargetUid, amount, noteInput.value.trim());
+    closeTopUpModal();
+    showToast(`✅ تم ${amount > 0 ? "شحن" : "خصم"} ${Math.abs(amount)} د.ل بنجاح لحساب ${topupTargetEmail || ""}`);
+    await loadAllData(); // تحديث الجداول والإحصائيات فوراً
+  } catch (err) {
+    errBox.textContent = "❌ خطأ: " + err.message;
+    errBox.style.display = "block";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "تأكيد الشحن";
+  }
+}
+
+function showToast(message) {
+  const toast = document.getElementById("admin-toast");
+  toast.textContent = message;
+  toast.style.display = "block";
+  setTimeout(() => { toast.style.display = "none"; }, 4000);
 }
 
 // ---------------------------------------------------------------------
@@ -149,7 +210,6 @@ function renderClinicalCasesTable() {
     return;
   }
 
-  // ربط userId بالبريد الإلكتروني لعرض أوضح
   const userEmailMap = {};
   allUsers.forEach((u) => { userEmailMap[u.id] = u.email; });
 
@@ -218,7 +278,6 @@ function showAdminTab(tabName, btnEl) {
   if (btnEl) btnEl.classList.add("active");
 }
 
-// إعادة تحميل يدوية للبيانات (زر تحديث)
 function refreshAdminData() {
   loadAllData();
 }

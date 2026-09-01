@@ -1,13 +1,7 @@
 // =====================================================================
 // مزامنة البيانات الفورية (Realtime Sync) بين الهاتف والويب
-// يشمل: المحفظة (Wallet)، الاشتراك في الدورات، وتقدّم المشاهدة
-//
-// 🔧 ملاحظة إصلاح مهمة (v2):
-// كل دالة "listenTo..." هنا تنتظر داخلياً تأكيد حالة تسجيل الدخول
-// عبر auth.onAuthStateChanged بدلاً من الاعتماد على auth.currentUser
-// مباشرة عند الاستدعاء. هذا يمنع مشكلة "race condition" التي كانت
-// تسبب عدم ظهور البيانات (مثل قائمة الدورات ورصيد المحفظة) عند
-// تحميل الصفحة لأول مرة، قبل أن يتأكد Firebase من هوية المستخدم.
+// يشمل: المحفظة (Wallet)، الاشتراك في الدورات، تقدّم المشاهدة،
+// وشحن الرصيد من لوحة المدير (v2)
 // =====================================================================
 
 // --- محفظة الرصيد (Wallet) ---
@@ -59,7 +53,7 @@ async function enrollInCourse(courseId, price) {
   });
 }
 
-// --- شحن رصيد المحفظة (يُستخدم من لوحة المدير أو Cloud Function لاحقاً) ---
+// --- شحن رصيد المستخدم الحالي نفسه (غير مستخدمة حالياً في الواجهة) ---
 
 function topUpWallet(amount) {
   const user = auth.currentUser;
@@ -67,6 +61,36 @@ function topUpWallet(amount) {
   return db.collection("users").doc(user.uid).update({
     walletBalance: firebase.firestore.FieldValue.increment(amount)
   });
+}
+
+// --- 🆕 شحن رصيد مستخدم آخر بواسطة المدير (Admin Top-up) ---
+// يعتمد على قاعدة firestore.rules التي تسمح للمدير بتحديث حقل
+// walletBalance فقط (وليس أي حقل آخر) لأي مستخدم في المنصة.
+// كما يُسجَّل كل عملية شحن في سجل تدقيق (walletTransactions) للشفافية.
+
+function topUpWalletForUser(targetUid, amount, note) {
+  const admin = auth.currentUser;
+  if (!admin) return Promise.reject(new Error("المدير غير مسجل الدخول"));
+  if (!targetUid) return Promise.reject(new Error("لم يتم تحديد المستخدم"));
+  if (!amount || isNaN(amount) || amount === 0) {
+    return Promise.reject(new Error("مبلغ غير صالح"));
+  }
+
+  const userRef = db.collection("users").doc(targetUid);
+  const txRef = userRef.collection("walletTransactions").doc();
+
+  const batch = db.batch();
+  batch.update(userRef, {
+    walletBalance: firebase.firestore.FieldValue.increment(amount)
+  });
+  batch.set(txRef, {
+    amount: amount,
+    adminEmail: admin.email,
+    note: note || "",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  return batch.commit();
 }
 
 // --- تقدّم مشاهدة الفصول (Chapters Progress) ---
