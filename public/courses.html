@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- 🔍 لوحة التشخيص يجب أن تُحمَّل أولاً، قبل أي شيء آخر -->
+<script src="js/debug-logger.js"></script>
+
 <header class="header">
   <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
   <h1>الدورات التدريبية</h1>
@@ -104,6 +107,7 @@
 <script src="js/courses-data.js"></script>
 <script src="js/certificates.js"></script>
 <script>
+  dlog("courses.html: main script started");
   requireAuth();
   enforceSingleDeviceSession();
 
@@ -119,10 +123,13 @@
     if (user) document.getElementById("welcome-user").textContent = "مرحباً، " + user.email;
   });
 
+  dlog("courses.html: calling renderCategoryFilters/renderCourses (initial)");
   renderCategoryFilters();
   renderCourses();
+  dlog("courses.html: initial render done");
 
   listenToWallet((balance, enrolled) => {
+    dlog(`courses.html: listenToWallet callback, balance=${balance}, enrolled=${JSON.stringify(enrolled)}`);
     currentBalance = balance;
     currentEnrolled = enrolled;
     document.getElementById("wallet-balance").textContent = balance + " د.ل";
@@ -130,6 +137,7 @@
   });
 
   listenToProfileExtra((extra) => {
+    dlog("courses.html: listenToProfileExtra callback");
     currentFullName = extra.fullName || "";
     currentCompletedChapters = extra.completedChapters || {};
     document.getElementById("fullname-banner").style.display = currentFullName ? "none" : "block";
@@ -137,6 +145,7 @@
   });
 
   listenToMyClinicalCases((cases) => {
+    dlog("courses.html: listenToMyClinicalCases callback");
     currentClinicalCases = cases;
     renderCourses();
   });
@@ -259,7 +268,6 @@
   }
 </script>
 
-<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(() => {});

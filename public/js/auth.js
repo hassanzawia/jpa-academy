@@ -1,6 +1,6 @@
 // =====================================================================
 // منطق تسجيل الدخول / الخروج - Auth Logic
-// 🆕 يشمل الآن حقل "الاسم الكامل" (fullName) وتقييد الدخول لجهاز واحد
+// 🔍 يشمل الآن استدعاءات dlog() في كل خطوة حرجة لتشخيص مشاكل الهاتف
 // =====================================================================
 
 const DEMO_ACCOUNTS = [
@@ -12,17 +12,37 @@ const DEMO_ACCOUNTS = [
 ];
 
 function loginWithEmail(email, password) {
+  dlog(`loginWithEmail() called for: ${email}`);
   return auth.signInWithEmailAndPassword(email, password)
     .then(async (cred) => {
-      await ensureUserProfile(cred.user);
-      await startNewSession(cred.user.uid); // 🆕 تسجيل جلسة جديدة نشطة (يُبطل أي جهاز آخر مفتوح)
+      dlog(`✅ signInWithEmailAndPassword SUCCESS, uid=${cred.user.uid}`);
+      try {
+        await ensureUserProfile(cred.user);
+        dlog("✅ ensureUserProfile() completed");
+      } catch (e) {
+        dlog(`🔴 ensureUserProfile() FAILED: ${e.message}`);
+        throw e;
+      }
+      try {
+        await startNewSession(cred.user.uid);
+        dlog("✅ startNewSession() completed");
+      } catch (e) {
+        dlog(`🔴 startNewSession() FAILED: ${e.message}`);
+        throw e;
+      }
+      dlog("➡️ Redirecting to courses.html now...");
       window.location.href = "courses.html";
+    })
+    .catch((err) => {
+      dlog(`🔴 loginWithEmail() CHAIN FAILED: [${err.code || "?"}] ${err.message}`);
+      throw err;
     });
 }
 
 async function ensureUserProfile(user) {
   const ref = db.collection("users").doc(user.uid);
   const snap = await ref.get();
+  dlog(`ensureUserProfile: doc.exists = ${snap.exists}`);
   if (!snap.exists) {
     await ref.set({
       email: user.email,
@@ -35,8 +55,10 @@ async function ensureUserProfile(user) {
       completedChapters: {},
       certificates: {}
     });
+    dlog("ensureUserProfile: new doc created");
   } else {
     await ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+    dlog("ensureUserProfile: lastLogin updated");
   }
 }
 
@@ -46,15 +68,22 @@ function saveFullName(name) {
   return db.collection("users").doc(user.uid).update({ fullName: name });
 }
 
-// 🆕 تسجيل الخروج: يمسح معرّف الجلسة المحلي أيضاً
 function logout() {
+  dlog("logout() called");
   localStorage.removeItem(SESSION_STORAGE_KEY);
   auth.signOut().then(() => (window.location.href = "login.html"));
 }
 
 function requireAuth() {
+  dlog("requireAuth() attached, waiting for onAuthStateChanged...");
   auth.onAuthStateChanged((user) => {
-    if (!user) window.location.href = "login.html";
+    dlog(`requireAuth: onAuthStateChanged fired, user=${user ? user.email : "null"}`);
+    if (!user) {
+      dlog("➡️ requireAuth: no user, redirecting to login.html");
+      window.location.href = "login.html";
+    } else {
+      dlog("requireAuth: user present, staying on page");
+    }
   });
 }
 
@@ -76,6 +105,7 @@ function renderDemoAccounts(containerId) {
 }
 
 function showError(err) {
+  dlog(`showError() called: ${err.message || err}`);
   const box = document.getElementById("error-box");
   if (box) {
     box.textContent = "خطأ: " + (err.message || "تعذر تسجيل الدخول");

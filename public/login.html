@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- 🔍 لوحة التشخيص يجب أن تُحمَّل أولاً، قبل أي شيء آخر -->
+<script src="js/debug-logger.js"></script>
+
 <header class="header">
   <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
   <h1>تسجيل الدخول</h1>
@@ -52,7 +55,9 @@
 <script src="js/session-guard.js"></script>
 <script src="js/auth.js"></script>
 <script>
+  dlog("login.html: main script started");
   renderDemoAccounts("demo-accounts");
+  dlog("login.html: renderDemoAccounts done");
 
   let loginInProgress = false;
 
@@ -71,6 +76,7 @@
   }
 
   function handleDemoLogin(email, password) {
+    dlog(`handleDemoLogin() clicked for: ${email}`);
     document.getElementById("email").value = email;
     document.getElementById("password").value = password;
     loginInProgress = true;
@@ -89,16 +95,18 @@
         btn.onclick = () => handleDemoLogin(acc.email, acc.password);
       }
     });
+    dlog("login.html: demo buttons rebound");
   })();
 
   auth.onAuthStateChanged((user) => {
+    dlog(`login.html: top-level onAuthStateChanged fired, user=${user ? user.email : "null"}, loginInProgress=${loginInProgress}`);
     if (user && !loginInProgress) {
+      dlog("➡️ login.html: redirecting to courses.html (returning user)");
       window.location.href = "courses.html";
     }
   });
 </script>
 
-<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(() => {});
