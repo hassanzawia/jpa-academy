@@ -1,6 +1,6 @@
 // =====================================================================
 // نظام تقييد الدخول لجهاز واحد فقط (Single Device Session)
-// 🔍 يشمل الآن استدعاءات dlog() في كل خطوة حرجة لتشخيص مشاكل الهاتف
+// 🔍 v3: مهلة زمنية وقائية على كتابة الجلسة الجديدة
 // =====================================================================
 
 const SESSION_STORAGE_KEY = "jpa_session_id";
@@ -17,10 +17,16 @@ async function startNewSession(uid) {
   const sessionId = generateSessionId();
   dlog(`startNewSession: generated sessionId=${sessionId} for uid=${uid}`);
   localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
-  await db.collection("users").doc(uid).update({
-    activeSessionId: sessionId,
-    activeSessionAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
+
+  dlog("startNewSession: calling db.update()...");
+  await withTimeout(
+    db.collection("users").doc(uid).update({
+      activeSessionId: sessionId,
+      activeSessionAt: firebase.firestore.FieldValue.serverTimestamp()
+    }),
+    8000,
+    "startNewSession.update()"
+  );
   dlog("startNewSession: activeSessionId written to Firestore successfully");
   return sessionId;
 }

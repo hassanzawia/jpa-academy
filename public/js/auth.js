@@ -1,6 +1,7 @@
 // =====================================================================
 // منطق تسجيل الدخول / الخروج - Auth Logic
-// 🔍 يشمل الآن استدعاءات dlog() في كل خطوة حرجة لتشخيص مشاكل الهاتف
+// 🔍 v3: مهلة زمنية وقائية (timeout) على كل عملية Firestore حرجة،
+// لمنع أي "تجمّد صامت" غير مرئي للمستخدم أو للسجل التشخيصي.
 // =====================================================================
 
 const DEMO_ACCOUNTS = [
@@ -11,25 +12,39 @@ const DEMO_ACCOUNTS = [
   { role: "مدير الأكاديمية (Admin)", email: "admin_jawda@jpa-academy.com", password: "admin@jawda2026", label: "admin_jawda" }
 ];
 
+// 🆕 دالة مساعدة: تُلحق مهلة زمنية بأي Promise. إن لم يكتمل خلال المهلة،
+// تُرفض الدالة برسالة خطأ واضحة بدلاً من الانتظار للأبد بصمت.
+function withTimeout(promise, ms, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`TIMEOUT (${ms}ms): ${label}`)), ms)
+    )
+  ]);
+}
+
 function loginWithEmail(email, password) {
   dlog(`loginWithEmail() called for: ${email}`);
   return auth.signInWithEmailAndPassword(email, password)
     .then(async (cred) => {
       dlog(`✅ signInWithEmailAndPassword SUCCESS, uid=${cred.user.uid}`);
+
       try {
-        await ensureUserProfile(cred.user);
+        await withTimeout(ensureUserProfile(cred.user), 10000, "ensureUserProfile");
         dlog("✅ ensureUserProfile() completed");
       } catch (e) {
-        dlog(`🔴 ensureUserProfile() FAILED: ${e.message}`);
+        dlog(`🔴 ensureUserProfile() FAILED/TIMEOUT: ${e.message}`);
         throw e;
       }
+
       try {
-        await startNewSession(cred.user.uid);
+        await withTimeout(startNewSession(cred.user.uid), 10000, "startNewSession");
         dlog("✅ startNewSession() completed");
       } catch (e) {
-        dlog(`🔴 startNewSession() FAILED: ${e.message}`);
+        dlog(`🔴 startNewSession() FAILED/TIMEOUT: ${e.message}`);
         throw e;
       }
+
       dlog("➡️ Redirecting to courses.html now...");
       window.location.href = "courses.html";
     })
@@ -41,23 +56,34 @@ function loginWithEmail(email, password) {
 
 async function ensureUserProfile(user) {
   const ref = db.collection("users").doc(user.uid);
-  const snap = await ref.get();
+  dlog("ensureUserProfile: calling ref.get()...");
+  const snap = await withTimeout(ref.get(), 8000, "ensureUserProfile.get()");
   dlog(`ensureUserProfile: doc.exists = ${snap.exists}`);
   if (!snap.exists) {
-    await ref.set({
-      email: user.email,
-      fullName: "",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-      walletBalance: 0,
-      enrolledCourses: [],
-      progress: {},
-      completedChapters: {},
-      certificates: {}
-    });
+    dlog("ensureUserProfile: calling ref.set() for new doc...");
+    await withTimeout(
+      ref.set({
+        email: user.email,
+        fullName: "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+        walletBalance: 0,
+        enrolledCourses: [],
+        progress: {},
+        completedChapters: {},
+        certificates: {}
+      }),
+      8000,
+      "ensureUserProfile.set()"
+    );
     dlog("ensureUserProfile: new doc created");
   } else {
-    await ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() });
+    dlog("ensureUserProfile: calling ref.update() for lastLogin...");
+    await withTimeout(
+      ref.update({ lastLogin: firebase.firestore.FieldValue.serverTimestamp() }),
+      8000,
+      "ensureUserProfile.update()"
+    );
     dlog("ensureUserProfile: lastLogin updated");
   }
 }
