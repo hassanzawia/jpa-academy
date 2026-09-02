@@ -93,7 +93,7 @@
 <script src="js/courses-data.js"></script>
 <script>
   requireAuth();
-  enforceSingleDeviceSession(); // 🆕 تفعيل حراسة الجلسة الواحدة
+  enforceSingleDeviceSession();
 
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get("course");
@@ -219,6 +219,13 @@
       : "❌ إجابة غير صحيحة. الإجابة الصحيحة: أسبرين / NSAIDs.";
     saveClinicalCaseResult("case-otc-warfarin", correct ? 100 : 0, { answer: answerText });
   }
+</script>
+
+<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+}
 </script>
 </body>
 </html>

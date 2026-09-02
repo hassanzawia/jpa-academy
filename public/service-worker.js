@@ -1,54 +1,54 @@
-// Service Worker - نسخة v3
-// 🔧 إصلاح مهم: تحويل استراتيجية تحميل صفحات HTML إلى "الشبكة أولاً" (Network First)
-// بدلاً من "التخزين المؤقت أولاً" (Cache First)، لمنع ظهور نسخ قديمة عالقة من الصفحة
-// بعد كل تحديث (مثل المشكلة التي حدثت سابقاً مع courses.html).
-const CACHE_NAME = "jpa-academy-v3";
-const ASSETS = [
-  "css/style.css",
-  "js/firebase-config.js",
-  "js/auth.js",
-  "js/sync.js",
-  "js/courses-data.js",
-  "manifest.json"
-];
+// =====================================================================
+// Service Worker ذاتي التدمير (Self-Destructing Kill Switch)
+// منصة الجودة للفارمسي أكاديمي
+// =====================================================================
+//
+// 🐛 السبب الجذري للمشكلة التي حللناها:
+// النسخة السابقة (v3) كانت تُخزّن نسخاً من auth.js, sync.js, courses-data.js
+// وغيرها عبر استراتيجية "Cache First". بما أن محتوى ملف service-worker.js
+// نفسه لم يتغيّر بين التحديثات، لم يكتشف المتصفح أي "نسخة جديدة" من الـ SW،
+// فاستمر بعض المستخدمين (خصوصاً على الهاتف) في تشغيل نسخة قديمة جداً من
+// ملفات JavaScript الأساسية محفوظة محلياً، مهما رفعنا تحديثات جديدة على
+// الخادم. هذا تسبب في أعطال متكررة يصعب تفسيرها (مثل الصفحة البيضاء).
+//
+// ✅ الحل النهائي: هذا الملف بمحتوى مختلف تماماً عن أي نسخة سابقة، لذا
+// سيكتشفه المتصفح كتحديث جديد فوراً. عند تفعيله (activate)، يقوم بـ:
+//   1) مسح كل ذاكرة التخزين المؤقت (Cache Storage) القديمة بلا استثناء
+//   2) إلغاء تسجيل نفسه بالكامل (unregister)
+//   3) إعادة تحميل كل الصفحات المفتوحة تحت سيطرته
+// النتيجة: الموقع سيعمل بعدها بدون أي Service Worker إطلاقاً - كل طلب
+// يذهب مباشرة للشبكة دائماً، مما يضمن عرض أحدث نسخة من الكود في كل مرة،
+// ويمنع تكرار هذه المشكلة نهائياً في المستقبل.
+// =====================================================================
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch(() => {})
-  );
+self.addEventListener("install", () => {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
+    (async () => {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
+      } catch (e) {
+        // تجاهل أي خطأ في مسح الكاش، الأهم هو إلغاء التسجيل التالي
+      }
 
-self.addEventListener("fetch", (event) => {
-  const url = event.request.url;
+      try {
+        await self.registration.unregister();
+      } catch (e) {
+        // تجاهل أي خطأ في إلغاء التسجيل
+      }
 
-  // لا نتدخل إطلاقاً في طلبات Firebase أو Google Drive - يجب أن تصل الشبكة دائماً
-  if (url.includes("firestore.googleapis.com") ||
-      url.includes("identitytoolkit.googleapis.com") ||
-      url.includes("drive.google.com") ||
-      url.includes("googleapis.com")) {
-    return;
-  }
-
-  // لصفحات HTML (التنقل بين الصفحات): الشبكة أولاً، ثم التخزين المؤقت كخطة بديلة فقط
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // لباقي الملفات الثابتة (CSS/JS): التخزين المؤقت أولاً لسرعة أعلى
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+      const clientsList = await self.clients.matchAll({ type: "window" });
+      clientsList.forEach((client) => {
+        try {
+          client.navigate(client.url);
+        } catch (e) {
+          // بعض المتصفحات القديمة قد لا تدعم navigate هنا، لا مشكلة
+        }
+      });
+    })()
   );
 });

@@ -54,11 +54,6 @@
 <script>
   renderDemoAccounts("demo-accounts");
 
-  // 🔧 إصلاح Race Condition: نستخدم علامة "loginInProgress" لمنع إعادة
-  // التوجيه التلقائي (auth.onAuthStateChanged) من التسابق مع تنفيذ
-  // startNewSession() داخل loginWithEmail(). بدون هذا الإصلاح، كان أحياناً
-  // يحدث التوجيه لصفحة courses.html قبل اكتمال كتابة معرّف الجلسة الجديد
-  // في Firestore، مما يُبطل ميزة "تقييد الدخول لجهاز واحد" بصمت.
   let loginInProgress = false;
 
   function handleLogin() {
@@ -75,7 +70,6 @@
     });
   }
 
-  // نُعيد تعريف دخول الحسابات التجريبية هنا لضمان رفع نفس العلامة
   function handleDemoLogin(email, password) {
     document.getElementById("email").value = email;
     document.getElementById("password").value = password;
@@ -86,10 +80,6 @@
     });
   }
 
-  // نُعيد ربط أزرار الحسابات التجريبية لتستخدم handleDemoLogin بدلاً من
-  // الاستدعاء المباشر لـ loginWithEmail (الذي كان يفتقد للعلامة الواقية).
-  // ⚠️ ننفّذ هذا مباشرة (وليس عبر DOMContentLoaded الذي قد يكون اكتمل
-  // بالفعل بما أن هذا السكربت في نهاية الصفحة) بعد استدعاء renderDemoAccounts أعلاه.
   (function rebindDemoButtons() {
     const container = document.getElementById("demo-accounts");
     if (!container) return;
@@ -101,13 +91,18 @@
     });
   })();
 
-  // 🔧 التوجيه التلقائي (لمستخدم عائد كان مسجّلاً دخوله بالفعل من قبل)
-  // يُنفَّذ فقط إن لم يكن هناك تسجيل دخول نشط حالياً عبر الزر، تجنباً للتسابق
   auth.onAuthStateChanged((user) => {
     if (user && !loginInProgress) {
       window.location.href = "courses.html";
     }
   });
+</script>
+
+<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+}
 </script>
 </body>
 </html>

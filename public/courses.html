@@ -94,11 +94,6 @@
   </div>
 </div>
 
-<!-- 🔧 ملاحظة إصلاح مهمة: لم نعد نُحمّل html2canvas و jsPDF هنا مباشرة.
-     هاتان المكتبتان تُحمَّلان الآن بشكل كسول (Lazy) فقط عند الضغط على
-     زر "🎓 الشهادة" فعلياً، داخل js/certificates.js. هذا يمنع تعطّل
-     الصفحة بالكامل (شاشة بيضاء) في حال حظرت شبكة المستخدم الوصول لـ
-     cdnjs.cloudflare.com (مشكلة شائعة على بعض شبكات الجوّال). -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -262,6 +257,13 @@
       errBox.style.display = "block";
     }
   }
+</script>
+
+<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+}
 </script>
 </body>
 </html>

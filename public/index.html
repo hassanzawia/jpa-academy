@@ -60,6 +60,9 @@
   <a href="courses.html"><span class="nav-icon">📚</span>الدورات</a>
 </nav>
 
+<!-- 🔧 Service Worker ذاتي التدمير: يزيل أي نسخة قديمة عالقة من ملفات
+     JavaScript محفوظة على جهاز المستخدم من زيارات سابقة، ثم يُلغي نفسه
+     نهائياً. راجع MOBILE_STALE_CACHE_FIX.md لتفاصيل كاملة عن هذا الإصلاح. -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js").catch(() => {});

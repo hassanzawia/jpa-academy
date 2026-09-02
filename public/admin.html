@@ -183,7 +183,14 @@
 <script src="js/admin.js"></script>
 <script>
   requireAdmin();
-  enforceSingleDeviceSession(); // 🆕 تفعيل حراسة الجلسة الواحدة (تشمل حساب المدير أيضاً)
+  enforceSingleDeviceSession();
+</script>
+
+<!-- 🔧 Service Worker ذاتي التدمير (راجع MOBILE_STALE_CACHE_FIX.md) -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+}
 </script>
 </body>
 </html>
