@@ -35,7 +35,6 @@
 
   <div class="course-grid" id="course-grid"></div>
 
-  <!-- 🆕 زر تسجيل الخروج (كان مفقوداً في هذه الصفحة) -->
   <div class="card" style="margin-top:16px;">
     <button class="btn btn-danger" onclick="logout()">🚪 تسجيل الخروج</button>
   </div>
@@ -95,6 +94,11 @@
   </div>
 </div>
 
+<!-- 🔧 ملاحظة إصلاح مهمة: لم نعد نُحمّل html2canvas و jsPDF هنا مباشرة.
+     هاتان المكتبتان تُحمَّلان الآن بشكل كسول (Lazy) فقط عند الضغط على
+     زر "🎓 الشهادة" فعلياً، داخل js/certificates.js. هذا يمنع تعطّل
+     الصفحة بالكامل (شاشة بيضاء) في حال حظرت شبكة المستخدم الوصول لـ
+     cdnjs.cloudflare.com (مشكلة شائعة على بعض شبكات الجوّال). -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -103,12 +107,10 @@
 <script src="js/auth.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/courses-data.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/certificates.js"></script>
 <script>
   requireAuth();
-  enforceSingleDeviceSession(); // 🆕 تفعيل حراسة الجلسة الواحدة
+  enforceSingleDeviceSession();
 
   let currentBalance = 0;
   let currentEnrolled = [];
