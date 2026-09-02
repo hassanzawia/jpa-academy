@@ -43,7 +43,6 @@
       <button class="tab-btn admin-tab-btn" onclick="showAdminTab('courses', this)">📚 إحصائيات الدورات</button>
     </div>
 
-    <!-- تبويب 1: نظرة عامة -->
     <section id="admin-tab-overview">
       <div class="admin-stats-grid">
         <div class="admin-stat-card">
@@ -74,7 +73,6 @@
       </div>
     </section>
 
-    <!-- تبويب 2: الطلاب -->
     <section id="admin-tab-students" style="display:none;">
       <div class="card">
         <h3 style="margin-top:0;">قائمة المستخدمين</h3>
@@ -97,7 +95,6 @@
       </div>
     </section>
 
-    <!-- تبويب 3: الحالات السريرية -->
     <section id="admin-tab-cases" style="display:none;">
       <div class="card">
         <h3 style="margin-top:0;">محاولات حل الحالات السريرية</h3>
@@ -118,7 +115,6 @@
       </div>
     </section>
 
-    <!-- تبويب 4: إحصائيات الدورات -->
     <section id="admin-tab-courses" style="display:none;">
       <div class="card">
         <h3 style="margin-top:0;">أداء الدورات</h3>
@@ -140,14 +136,13 @@
 
     <div class="card">
       <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">↩️ الرجوع لصفحة الدورات</button>
-      <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+      <button class="btn btn-danger" onclick="logout()">🚪 تسجيل الخروج</button>
     </div>
 
   </div>
 
 </main>
 
-<!-- 🆕 نافذة شحن الرصيد (Modal) -->
 <div id="topup-modal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
     <h3 style="margin-top:0;">💰 شحن رصيد المستخدم</h3>
@@ -169,7 +164,6 @@
   </div>
 </div>
 
-<!-- 🆕 إشعار نجاح مؤقت (Toast) -->
 <div id="admin-toast" class="admin-toast" style="display:none;"></div>
 
 <nav class="bottom-nav">
@@ -182,12 +176,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/session-guard.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/courses-data.js"></script>
 <script src="js/admin.js"></script>
 <script>
   requireAdmin();
+  enforceSingleDeviceSession(); // 🆕 تفعيل حراسة الجلسة الواحدة (تشمل حساب المدير أيضاً)
 </script>
 </body>
 </html>

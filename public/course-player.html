@@ -71,7 +71,7 @@
 
   <div class="card">
     <button class="btn btn-outline" onclick="window.location.href='courses.html'" style="margin-bottom:8px;">↩️ الرجوع لقائمة الدورات</button>
-    <button class="btn btn-danger" onclick="logout()">تسجيل الخروج</button>
+    <button class="btn btn-danger" onclick="logout()">🚪 تسجيل الخروج</button>
   </div>
 
 </main>
@@ -87,11 +87,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/session-guard.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/sync.js"></script>
 <script src="js/courses-data.js"></script>
 <script>
   requireAuth();
+  enforceSingleDeviceSession(); // 🆕 تفعيل حراسة الجلسة الواحدة
 
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get("course");
@@ -120,7 +122,6 @@
     }
   });
 
-  // 🆕 الاستماع لحالة الفصول المكتملة (لعرض العلامات ✅ وحالة الزر)
   listenToProfileExtra((extra) => {
     currentCompletedChapters = extra.completedChapters || {};
     renderChapters();
@@ -164,16 +165,13 @@
     saveChapterProgress(course.id, chapterId, { started: true });
   }
 
-  // 🆕 زر "أنهيت هذا الفصل"
   function handleMarkComplete() {
     if (!course || !currentChapterId) return;
     const btn = document.getElementById("mark-complete-btn");
     btn.disabled = true;
     btn.textContent = "جارٍ الحفظ...";
     markChapterComplete(course.id, currentChapterId)
-      .then(() => {
-        // التحديث الفعلي للواجهة سيأتي تلقائياً عبر listenToProfileExtra
-      })
+      .then(() => {})
       .catch((err) => {
         alert("حدث خطأ: " + err.message);
         btn.disabled = false;

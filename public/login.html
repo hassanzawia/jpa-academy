@@ -33,6 +33,7 @@
 
   <div class="card">
     <h3 style="margin-top:0;">حسابات تجريبية (دخول بنقرة واحدة)</h3>
+    <p style="color:var(--muted); font-size:0.8rem; margin-top:-6px;">⚠️ ملاحظة: يُسمح بجلسة واحدة نشطة فقط لكل حساب. تسجيل الدخول من جهاز جديد سيُنهي الجلسة على أي جهاز آخر تلقائياً.</p>
     <div class="demo-list" id="demo-accounts"></div>
   </div>
 
@@ -48,6 +49,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/session-guard.js"></script>
 <script src="js/auth.js"></script>
 <script>
   renderDemoAccounts("demo-accounts");

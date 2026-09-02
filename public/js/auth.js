@@ -1,6 +1,6 @@
 // =====================================================================
 // منطق تسجيل الدخول / الخروج - Auth Logic
-// 🆕 يشمل الآن حقل "الاسم الكامل" (fullName) المطلوب لإصدار الشهادات
+// 🆕 يشمل الآن حقل "الاسم الكامل" (fullName) وتقييد الدخول لجهاز واحد
 // =====================================================================
 
 const DEMO_ACCOUNTS = [
@@ -15,6 +15,7 @@ function loginWithEmail(email, password) {
   return auth.signInWithEmailAndPassword(email, password)
     .then(async (cred) => {
       await ensureUserProfile(cred.user);
+      await startNewSession(cred.user.uid); // 🆕 تسجيل جلسة جديدة نشطة (يُبطل أي جهاز آخر مفتوح)
       window.location.href = "courses.html";
     });
 }
@@ -39,14 +40,15 @@ async function ensureUserProfile(user) {
   }
 }
 
-// 🆕 حفظ الاسم الكامل للمستخدم (يُستخدم لاحقاً على الشهادة)
 function saveFullName(name) {
   const user = auth.currentUser;
   if (!user) return Promise.reject(new Error("المستخدم غير مسجل الدخول"));
   return db.collection("users").doc(user.uid).update({ fullName: name });
 }
 
+// 🆕 تسجيل الخروج: يمسح معرّف الجلسة المحلي أيضاً
 function logout() {
+  localStorage.removeItem(SESSION_STORAGE_KEY);
   auth.signOut().then(() => (window.location.href = "login.html"));
 }
 
