@@ -54,6 +54,13 @@
 <script>
   renderDemoAccounts("demo-accounts");
 
+  // 🔧 إصلاح Race Condition: نستخدم علامة "loginInProgress" لمنع إعادة
+  // التوجيه التلقائي (auth.onAuthStateChanged) من التسابق مع تنفيذ
+  // startNewSession() داخل loginWithEmail(). بدون هذا الإصلاح، كان أحياناً
+  // يحدث التوجيه لصفحة courses.html قبل اكتمال كتابة معرّف الجلسة الجديد
+  // في Firestore، مما يُبطل ميزة "تقييد الدخول لجهاز واحد" بصمت.
+  let loginInProgress = false;
+
   function handleLogin() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
@@ -61,11 +68,45 @@
       showError({ message: "الرجاء إدخال البريد الإلكتروني وكلمة المرور" });
       return;
     }
-    loginWithEmail(email, password).catch(showError);
+    loginInProgress = true;
+    loginWithEmail(email, password).catch((err) => {
+      loginInProgress = false;
+      showError(err);
+    });
   }
 
+  // نُعيد تعريف دخول الحسابات التجريبية هنا لضمان رفع نفس العلامة
+  function handleDemoLogin(email, password) {
+    document.getElementById("email").value = email;
+    document.getElementById("password").value = password;
+    loginInProgress = true;
+    loginWithEmail(email, password).catch((err) => {
+      loginInProgress = false;
+      showError(err);
+    });
+  }
+
+  // نُعيد ربط أزرار الحسابات التجريبية لتستخدم handleDemoLogin بدلاً من
+  // الاستدعاء المباشر لـ loginWithEmail (الذي كان يفتقد للعلامة الواقية).
+  // ⚠️ ننفّذ هذا مباشرة (وليس عبر DOMContentLoaded الذي قد يكون اكتمل
+  // بالفعل بما أن هذا السكربت في نهاية الصفحة) بعد استدعاء renderDemoAccounts أعلاه.
+  (function rebindDemoButtons() {
+    const container = document.getElementById("demo-accounts");
+    if (!container) return;
+    DEMO_ACCOUNTS.forEach((acc, index) => {
+      const btn = container.children[index];
+      if (btn) {
+        btn.onclick = () => handleDemoLogin(acc.email, acc.password);
+      }
+    });
+  })();
+
+  // 🔧 التوجيه التلقائي (لمستخدم عائد كان مسجّلاً دخوله بالفعل من قبل)
+  // يُنفَّذ فقط إن لم يكن هناك تسجيل دخول نشط حالياً عبر الزر، تجنباً للتسابق
   auth.onAuthStateChanged((user) => {
-    if (user) window.location.href = "courses.html";
+    if (user && !loginInProgress) {
+      window.location.href = "courses.html";
+    }
   });
 </script>
 </body>
