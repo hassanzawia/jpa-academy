@@ -2,6 +2,18 @@
 <html lang="ar" dir="rtl">
 <head>
   <script>
+  // منع توقف الكود إذا وُجدت استدعاءات قديمة لـ dlog
+  window.dlog = function() {};
+
+  window.onerror = function(msg, url, line) {
+    alert("خطأ: " + msg + "\nالسطر: " + line);
+    return false;
+  };
+  window.onunhandledrejection = function(e) {
+    alert("خطأ Promise: " + e.reason);
+  };
+</script>
+  <script>
   // التقاط أي خطأ يحدث أثناء تحميل الصفحة
   window.onerror = function(message, source, lineno) {
     alert("خطأ أثناء التحميل: " + message + " في السطر: " + lineno);
