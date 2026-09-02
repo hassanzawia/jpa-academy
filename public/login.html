@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <script>
+  // التقاط أي خطأ يحدث أثناء تحميل الصفحة
+  window.onerror = function(message, source, lineno) {
+    alert("خطأ أثناء التحميل: " + message + " في السطر: " + lineno);
+    return false;
+  };
+
+  // التقاط أي فشل في الوعود البرمجية
+  window.onunhandledrejection = function(event) {
+    alert("خطأ في عملية خلفية: " + event.reason);
+  };
+</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>تسجيل الدخول | Al-Jawda Pharmacy Academy</title>
@@ -11,7 +23,6 @@
 <body>
 
 <!-- 🔍 لوحة التشخيص يجب أن تُحمَّل أولاً، قبل أي شيء آخر -->
-<script src="js/debug-logger.js"></script>
 
 <header class="header">
   <div class="logo-badge">JPA · Al-Jawda Pharmacy Academy</div>
