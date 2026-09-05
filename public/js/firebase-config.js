@@ -12,7 +12,7 @@
 // الميزة يعني فقدان العمل بدون اتصال إنترنت، لكنه يضمن عدم تجمّد أي
 // عملية كتابة/قراءة بصمت بدون أي رسالة خطأ.
 // =====================================================================
-
+window.dlog = window.dlog || function() {};
 const firebaseConfig = {
   apiKey: "AIzaSyAhqeuGr5jN69TfyeQnDxRiQ-dQvieNxdg",
   authDomain: "pharmacyacadimy.firebaseapp.com",
